@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>核规联盟 · 科普互动平台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+body {
+    background: linear-gradient(160deg, #e0f2fe 0%, #bae6fd 30%, #7dd3fc 60%, #38bdf8 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* ===== 侧边法规面板 ===== */
+.side-panel {
+    width: 340px; flex-shrink: 0;
+    background: #fff; border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    display: flex; flex-direction: column; overflow: hidden;
+    height: 780px;
+}
+.side-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; padding: 16px 20px; font-size: 15px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+}
+.side-header-right { margin-left: auto; font-size: 12px; opacity: 0.7; }
+.side-content { flex: 1; overflow-y: auto; padding: 12px 16px; }
+.side-empty {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 100%; color: #aaa;
+    font-size: 13px; text-align: center; gap: 12px;
+}
+.side-empty-icon { font-size: 48px; opacity: 0.3; }
+.law-card-side {
+    background: #f0f4f8; border-left: 4px solid #667eea;
+    padding: 12px 14px; border-radius: 12px; margin-bottom: 10px;
+    font-size: 12px; color: #4a5568; animation: slideInRight 0.25s ease;
+}
+@keyframes slideInRight { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+.law-title-side { font-weight: bold; color: #667eea; margin-bottom: 6px; font-size: 13px; }
+.law-desc-side { margin-bottom: 8px; line-height: 1.5; }
+.law-article-side { margin-top: 6px; font-size: 11px; color: #555; line-height: 1.5; border-top: 1px dashed #d0d0d0; padding-top: 6px; }
+.law-link-side { color: #667eea; text-decoration: underline; cursor: pointer; margin-top: 6px; font-size: 11px; display: block; }
+.side-clear-btn {
+    margin: 8px 16px 12px; background: #f0f4f8;
+    border: 1px solid #e0e0e0; border-radius: 16px;
+    padding: 8px; font-size: 12px; color: #888; cursor: pointer; text-align: center;
+}
+.side-clear-btn:hover { background: #e8eef5; }
+
+/* ===== 手机 ===== */
+.phone {
+    max-width: 480px; width: 100%; height: 780px;
+    background-color: #f5f5f5; border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px -12px rgba(0,0,0,0.6), 0 0 0 8px #2a2a2a;
+    display: flex; flex-direction: column; flex-shrink: 0;
+}
+.status-bar { background: #ededed; padding: 12px 20px 6px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; color: #1f2e3a; }
+.chat-header { background: #ededed; padding: 8px 16px 10px; border-bottom: 0.5px solid #dbdbdb; display: flex; align-items: center; gap: 12px; }
+.back-btn { font-size: 24px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 20px; background: #e5e5e5; }
+.group-name { font-weight: 600; font-size: 17px; }
+.member-count { font-size: 12px; color: #6c6c6c; }
+.more-icon { font-size: 20px; color: #6c6c6c; }
+.chat-area { flex: 1; overflow-y: auto; padding: 16px 12px; background: linear-gradient(180deg, #e8f4f8 0%, #d4e8ed 100%); display: flex; flex-direction: column; gap: 10px; position: relative; }
+.message { display: flex; gap: 10px; max-width: 85%; animation: fadeInUp 0.2s ease; }
+.my-message { align-self: flex-end; flex-direction: row-reverse; }
+.other-message { align-self: flex-start; }
+.avatar { width: 40px; height: 40px; background: #cbdbe6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.my-avatar { background: #2c7da0; color: white; }
+.bubble { background: white; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 1px rgba(0,0,0,0.05); word-break: break-word; white-space: pre-wrap; }
+.my-message .bubble { background: #d9f0ec; border-bottom-right-radius: 4px; }
+.other-message .bubble { border-bottom-left-radius: 4px; }
+.other-message.negative .bubble { background: #fde8e8; border: 1px solid #f5c6c6; }
+.other-message.positive .bubble { background: #edf7ed; border: 1px solid #c3e6cb; }
+.other-message.neutral .bubble { background: #fff8e1; border: 1px solid #ffe082; }
+.name-tag { font-size: 12px; color: #6c6c6c; margin-bottom: 4px; margin-left: 4px; }
+.system-tip { text-align: center; font-size: 12px; color: #888; margin: 6px 0; }
+.rumor-card { background: #fff3e0; border-left: 4px solid #f4a261; padding: 12px; border-radius: 16px; margin: 4px 0; font-size: 13px; }
+.rumor-warning { font-weight: bold; color: #bc3900; }
+
+/* ===== 底部栏 ===== */
+.bottom-bar { background: #fff; border-top: 0.5px solid #dbdbdb; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+/* 单按钮辟谣流程 */
+.step-hint { font-size: 11px; color: #888; margin-bottom: 2px; }
+.main-action-btn {
+    width: 100%; padding: 14px 20px; border: none; border-radius: 28px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    background: linear-gradient(135deg, #2c7da0, #1a936f);
+    color: white; box-shadow: 0 4px 16px rgba(44,125,160,0.3);
+    transition: transform 0.1s, box-shadow 0.15s, background 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.main-action-btn:hover:not(.locked) { box-shadow: 0 6px 22px rgba(44,125,160,0.45); transform: translateY(-1px); }
+.main-action-btn:active:not(.locked) { transform: scale(0.97); box-shadow: 0 2px 8px rgba(44,125,160,0.2); }
+.main-action-btn.pulse:not(.locked) { animation: btnPulse 1.5s ease infinite; }
+@keyframes btnPulse { 0%,100%{box-shadow:0 4px 16px rgba(44,125,160,0.3)} 50%{box-shadow:0 4px 28px rgba(44,125,160,0.55)} }
+.main-action-btn.locked { background: #bbb !important; box-shadow: none; cursor: not-allowed; opacity: 0.65; }
+.main-action-btn.locked:active { transform: none; }
+
+/* 进度条 */
+.progress-bar-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-bottom: 6px; }
+.progress-pip { flex: 1; max-width: 60px; height: 6px; border-radius: 3px; background: #e0e0e0; transition: background 0.4s, transform 0.3s; }
+.progress-pip.done { background: #1a936f; }
+.progress-pip.active { background: linear-gradient(90deg, #f4a261, #e76f51); transform: scaleY(1.2); }
+.progress-pip.locked { background: #e0e0e0; }
+
+/* 一键辟谣 */
+.cheat-row { display: flex; align-items: center; gap: 8px; }
+.cheat-btn {
+    flex: 1; padding: 9px; border: 1.5px dashed #ccc; border-radius: 20px;
+    background: transparent; font-size: 12px; color: #aaa; cursor: pointer;
+    text-align: center; transition: all 0.2s;
+}
+.cheat-btn:hover { border-color: #667eea; color: #667eea; background: #f8f4ff; }
+.input-row { display: flex; gap: 8px; align-items: center; }
+.input-field { flex: 1; background: #f5f5f5; border: none; padding: 9px 14px; border-radius: 28px; font-size: 14px; }
+.send-btn { background: #2c7da0; border: none; color: white; padding: 7px 14px; border-radius: 28px; font-weight: 600; cursor: pointer; }
+.footer-hint { font-size: 10px; text-align: center; color: #aaa; }
+
+/* ============================================================ */
+/* 入场动画：原子旋转 splash */
+/* ============================================================ */
+.nuclear-splash {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #0a2a3a 0%, #1a4a5a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+.nuclear-splash.fade-out {
+    opacity: 0; visibility: hidden; pointer-events: none;
+}
+.atom-wrap {
+    position: relative; width: 140px; height: 140px;
+    animation: atomRotate 4s linear infinite;
+}
+.atom-core {
+    position: absolute; top: 50%; left: 50%;
+    width: 28px; height: 28px;
+    background: radial-gradient(circle, #ffd700, #ff8c00);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+}
+.atom-orbit {
+    position: absolute; inset: 0;
+    border: 1.5px solid rgba(100,200,255,0.5);
+    border-radius: 50%;
+}
+.atom-orbit:nth-child(2) { transform: rotate(60deg); }
+.atom-orbit:nth-child(3) { transform: rotate(120deg); }
+.electron {
+    position: absolute; width: 10px; height: 10px;
+    background: #4af; border-radius: 50%;
+    top: -5px; left: 50%; transform: translateX(-50%);
+    box-shadow: 0 0 6px #4af;
+    animation: electronMove 3s linear infinite;
+}
+@keyframes atomRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes electronMove {
+    0% { top: -5px; left: 50%; }
+    25% { top: 50%; left: calc(100% - 5px); }
+    50% { top: calc(100% - 5px); left: 50%; }
+    75% { top: 50%; left: -5px; }
+    100% { top: -5px; left: 50%; }
+}
+.splash-tagline {
+    margin-top: 30px; font-size: 30px; font-weight: bold; color: white;
+    text-shadow: 0 0 12px rgba(0,160,255,0.6); letter-spacing: 4px;
+}
+.splash-mission {
+    margin: 20px 36px 0;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+    width: 440px; max-width: 92%;
+    min-height: 120px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.splash-mission-label {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.splash-mission-text {
+    font-size: 15px; color: rgba(255,255,255,0.95);
+    line-height: 1.8; letter-spacing: 0.5px;
+}
+.splash-pills { margin-top: 24px; display: flex; gap: 12px; }
+.splash-pill {
+    background: rgba(255,255,255,0.12); padding: 5px 16px; border-radius: 20px;
+    font-size: 13px; color: rgba(255,255,255,0.85); letter-spacing: 1px;
+}
+.splash-footer { position: absolute; bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+
+/* 检索和选择控制区 */
+.splash-interactive-zone {
+    margin-top: 24px; display: flex; flex-direction: column; gap: 14px; width: 340px; max-width: 90%;
+    opacity: 0; transform: translateY(15px); transition: all 0.5s ease;
+    pointer-events: none;
+}
+.splash-interactive-zone.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.rumor-selector-container { display: flex; flex-direction: column; gap: 8px; text-align: left; position: relative; }
+.selector-title { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; padding-left: 4px; }
+
+/* 现代防截断选择器样式 */
+.rumor-selector {
+    width: 100%; padding: 12px 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(15,35,55,0.85); color: #fff; font-size: 14px; outline: none; cursor: pointer;
+    transition: all 0.25s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+.rumor-selector:hover, .rumor-selector:focus {
+    border-color: #38bdf8; 
+    background: rgba(12,42,66,0.98);
+    box-shadow: 0 6px 24px rgba(56,189,248,0.25);
+}
+.rumor-selector option { background: #0e2433; color: #fff; padding: 10px; font-size: 13px; }
+
+.splash-start-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 24px; font-size: 14px; font-weight: 600;
+    color: white; background: linear-gradient(135deg, #10b981, #059669); cursor: pointer;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.35); transition: all 0.15s; text-align: center;
+}
+.splash-start-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(16,185,129,0.5); }
+.splash-start-btn:active { transform: scale(0.98); }
+
+/* ============================================================ */
+/* 结束动画：成就解锁 */
+/* ============================================================ */
+.new-challenge-btn {
+    display: block; width: calc(100% - 16px); margin: 8px auto;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    border: none; padding: 12px 24px; border-radius: 28px;
+    font-size: 14px; font-weight: 600; color: white;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(245,87,108,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.new-challenge-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,87,108,0.45); }
+.new-challenge-btn:active { transform: scale(0.97); }
+
+/* ===== 选项弹窗 ===== */
+.option-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.option-panel {
+    background: #fff; border-radius: 24px; width: 92%; max-width: 440px;
+    padding: 24px 20px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.option-title { font-size: 13px; color: #888; margin-bottom: 16px; text-align: center; }
+.option-title strong { color: #333; font-size: 15px; }
+.option-desc { font-size: 12px; color: #aaa; text-align: center; margin-bottom: 16px; }
+.option-item {
+    background: #f8f9fa; border: 2px solid transparent;
+    border-radius: 16px; padding: 14px 16px; margin-bottom: 10px;
+    font-size: 13px; line-height: 1.5; cursor: pointer;
+    transition: all 0.15s; text-align: left; width: 100%;
+}
+.option-item:last-child { margin-bottom: 0; }
+.option-item:hover { border-color: #2c7da0; background: #eef7fa; transform: scale(1.01); }
+.option-item:active { transform: scale(0.99); }
+.option-item.correct { border-color: #1a936f !important; background: #e8f7f0 !important; animation: correctFlash 0.4s ease; }
+.option-item.wrong { border-color: #e53e3e !important; background: #fff5f5 !important; }
+@keyframes correctFlash { 0%{background:#fff} 30%{background:#b8f5d8} 100%{background:#e8f7f0} }
+
+/* ===== Game Over ===== */
+.gameover-mask {
+    position: fixed; inset: 0; background: rgba(20,0,0,0.75);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 600; backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+}
+.gameover-card {
+    background: #fff; border-radius: 28px; padding: 36px 32px;
+    text-align: center; max-width: 360px; width: 90%;
+    animation: shake 0.5s ease;
+}
+@keyframes shake {
+    0%,100%{transform:translateX(0)}
+    15%{transform:translateX(-18px) rotate(-2deg)}
+    30%{transform:translateX(18px) rotate(2deg)}
+    45%{transform:translateX(-14px) rotate(-1deg)}
+    60%{transform:translateX(14px) rotate(1deg)}
+    75%{transform:translateX(-8px)}
+    90%{transform:translateX(8px)}
+}
+.gameover-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
+.gameover-title { font-size: 22px; font-weight: bold; color: #c0392b; margin-bottom: 10px; }
+.gameover-sub { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 24px; }
+.retry-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white; border: none; padding: 14px 40px;
+    border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(192,57,43,0.3);
+    transition: transform 0.1s;
+}
+.retry-btn:active { transform: scale(0.96); }
+
+/* ===== 内嵌法规提示 ===== */
+.law-hint-card { background: #f8f4ff; border: 1px solid #d0c0ff; border-radius: 14px; padding: 10px 14px; font-size: 12px; color: #6b5fa0; margin: 4px 0; animation: fadeInUp 0.2s ease; display: flex; align-items: flex-start; gap: 8px; }
+.law-hint-card .law-icon { font-size: 18px; flex-shrink: 0; }
+.law-hint-card .law-text { line-height: 1.5; }
+.law-hint-card .law-text strong { color: #667eea; }
+
+/* ===== 通用动画 ===== */
+@keyframes fadeInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fall { from{transform:translateY(0) rotate(0deg);opacity:1} to{transform:translateY(110vh) rotate(720deg);opacity:0} }
+.badge-toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #1f2e3ad9; backdrop-filter: blur(8px); color: gold; padding: 8px 16px; border-radius: 40px; font-size: 13px; z-index: 200; pointer-events: none; white-space: nowrap; animation: fadeIn 0.2s ease; }
+
+/* Responsive */
+@media (max-width: 900px) { .side-panel{display:none} body{justify-content:center} }
+@media (max-width: 540px) { body{padding:0} .phone{max-width:100%;height:100vh;border-radius:0;box-shadow:none} }
+</style>
+</head>
+<body>
+
+<!-- ===== 侧边法规面板 ===== -->
+<div class="side-panel">
+    <div class="side-header">
+        <span>📜</span><span>法规知识库</span>
+        <span class="side-header-right" id="lawCount">暂无</span>
+    </div>
+    <div class="side-content" id="sideContent">
+        <div class="side-empty" id="sideEmpty">
+            <div class="side-empty-icon">📋</div>
+            <div>点击「亮法规支撑」<br>法律条文将显示在这里</div>
+        </div>
+    </div>
+    <div class="side-clear-btn" id="sideClearBtn" style="display:none;" onclick="clearSidePanel()">🗑️ 清空面板</div>
+</div>
+
+<!-- ===== 手机界面 ===== -->
+<div class="phone">
+    <div class="status-bar"><span>9:41</span><span>📶 🔋 100%</span></div>
+    <div class="chat-header">
+        <div class="back-btn">←</div>
+        <div style="flex:1">
+            <div class="group-name">⚖️ 核你讲法规 ⚖️</div>
+            <div class="member-count" id="memberCount">群成员 8人 · 核规联盟 在线</div>
+        </div>
+        <div class="more-icon">⋯</div>
+    </div>
+    <div class="chat-area" id="chatArea">
+        <div class="system-tip" id="welcomeTip">✨ 核规联盟已接入 · 科学守护日常 ✨</div>
+        <div class="rumor-card" id="rumorHint">
+            ⚠️ <span class="rumor-warning">当前谣言</span>：<br>
+            <div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">
+                📢 <strong id="rumorTitle">等待谣言出现...</strong><br>
+                <span style="color:#888;font-size:11px;" id="rumorSender">— 等待中</span>
+            </div>
+        </div>
+    </div>
+    <!-- 底部栏：单按钮 + 一键辟谣 + 输入框 -->
+    <div class="bottom-bar" id="bottomBar">
+        <!-- 进度小点 -->
+        <div class="progress-bar-row" id="progressPips" style="justify-content:center;gap:6px;margin-bottom:2px;">
+            <div class="progress-pip" id="pip0"></div>
+            <div class="progress-pip" id="pip1"></div>
+            <div class="progress-pip" id="pip2"></div>
+            <div class="progress-pip" id="pip3"></div>
+        </div>
+        <!-- 主按钮 -->
+        <button class="main-action-btn pulse" id="mainActionBtn" onclick="showQuestion()">
+            <span id="mainBtnIcon">🔍</span>
+            <span id="mainBtnText">第一步：查官方通报</span>
+        </button>
+        <!-- 一键辟谣 + 输入框 -->
+        <div class="input-row">
+            <div class="cheat-btn" id="cheatBtn" onclick="skipToFinish()">⚡ 一键完整辟谣</div>
+            <input type="text" class="input-field" id="messageInput" placeholder="输入科学回复...">
+            <button class="send-btn" id="sendBtn">发送</button>
+        </div>
+        <div class="footer-hint">👨‍🔬 你是核规科普志愿者 · 用专业知识传播科学</div>
+    </div>
+</div>
+
+<!-- ===== 选项弹窗（动态生成） ===== -->
+<div id="optionPopup" style="display:none;"></div>
+
+<!-- ===== Game Over（动态生成） ===== -->
+<div id="gameoverPopup" style="display:none;"></div>
+
+<script>
+// ============================================================
+// 头像映射
+// ============================================================
+const AVATAR_MAP = {
+    '咸鱼翻身中':'🧂','冲浪第一线':'🌊','我也不知道啊':'😕',
+    '张大妈':'👩','刘大爷':'👴','宝妈小陈':'👩‍👧','居民老王':'🧔',
+    '舍友1':'🎓','舍友2':'🧑‍🎓','舍友3':'👨‍🎓',
+    '李大妈':'👩‍🦱','赵大爷':'👴🏿','年轻宝妈小周':'👩‍👧‍👦','街坊老周':'🧔‍♂️',
+    '邻居吴姐':'👩‍🦰','李叔':'👨‍🔧','王宝妈':'👩‍👧','李大爷':'👴'
+};
+
+// ============================================================
+// 谣言数据库（线性 stages 结构）
+// ============================================================
+const RUMORS = [
+    {
+        id:'irradiated_food',
+        title:'辐照食品带辐射，吃了会致癌基因突变！',
+        sender:'李大妈 等6人',
+        groupName:'邻里互助群 24人 在线',
+        intro:[
+            {s:'李大妈',t:'大伙听说没，超市里不少凤爪、干货都是辐照食品，我刷短视频刚看到！😱'},
+            {s:'赵大爷',t:'我早刷到了，说是辐照全靠核辐射照射，这些食品身上全都带着残留辐射！😰'},
+            {s:'年轻宝妈小周',t:'那可糟了，我总给孩子买泡椒凤爪，孩子年纪小，长期吃会不会基因突变啊？😨'},
+            {s:'李大妈',t:'不光孩子，中老年长期吃辐照食品肝癌、白血病风险翻倍，辐射还能改变人体基因！🚫'}
+        ],
+        stages:[
+            {
+                btnText:'🔍 第一步：查官方通报',
+                btnIcon:'🔍',
+                options:[
+                    {text:'辐照食品的辐射会残留在食物里，但剂量很低，偶尔吃一两次没事，长期吃可能有风险。',isCorrect:false,whyWrong:'错误地认为辐射会残留在食物里，且暗示有累积风险，与科学事实完全相反。'},
+                    {text:'辐照食品确实经过辐射处理，但国家既然让卖，说明辐射量在安全范围内，不用担心。',isCorrect:false,whyWrong:'仍然认为"有辐射残留"，只是剂量低。没有解释清楚"辐照≠放射性污染"这个关键区别。'},
+                    {text:'世卫组织、国际原子能机构等三大国际机构联合认证：合规的辐照食品是安全的，无致癌、无致突变风险，根本不带残留辐射。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'🔍【查官方通报】\n短视频里那套致癌论完全是谣言！\n\n世卫组织（WHO）、国际原子能机构（IAEA）、联合食品法典委员会三大国际权威机构几十年前就发布了联合通报认证：在规定剂量内照射的任何食品都是安全的，无致癌风险，无致基因突变风险，根本没有残留辐射！',
+                detail:'能让物品产生辐射需要百万戈瑞以上超高剂量，我国对辐照食品的管理非常严格，远达不到活化条件。\n\n📌 来源：人民网科普《辐照食品和辐射有关？》2024年12月',
+                fact:'📋 查证结果：辐照食品无残留辐射，三大国际权威机构联合认证安全！',
+                law:'GB18524',
+                src:'irradiated_food_src',
+                followUp:{s:'赵大爷',t:'小原啊，大伙还是转不过这个弯来。那可是放射线生生照在肉上啊！这就跟去了核污染区一样，那食物身上真的能干净？真的不沾核辐射？'}
+            },
+            {
+                btnText:'🧠 第二步：讲科学原理',
+                btnIcon:'🧠',
+                options:[
+                    {text:'辐照食品的辐射量非常低，远低于对人体有害的水平，所以偶尔吃完全没问题。',isCorrect:false,whyWrong:'没有解释关键问题"为什么不会残留"，只是说"量低"，回避了核心原理。'},
+                    {text:'辐照用的是能量射线（如电子束），照过去就消失了，不会留在食物里。就像阳光照在身上、或用紫外线灯消毒杯子一样，杯子不会变成放射源。',isCorrect:true,whyWrong:''},
+                    {text:'辐照食品的辐射会破坏食物营养，虽然不会致癌，但长期吃会导致营养不良，要少吃。',isCorrect:false,whyWrong:'夸大了营养损耗。国标10kGy剂量下维生素损耗远低于日常烹饪，不会导致营养不良。'}
+                ],
+                brief:'🧠【讲科学原理】\n大伙一定要分清"射线"和"放射性物质"。\n\n辐照用的是人工产生的γ射线或电子束，它们是"能量"，就像手电筒的光一样——照过去，杀死了细菌，光就消失了，根本不会留在食物里。而核污染是因为沾染了"放射性物质"。辐照食材全程不接触放射源，习惯上就像用紫外线灯消毒杯子，杯子绝对不会变成放射源！',
+                detail:'国家限定食品辐照剂量极低，仅少量维生素轻微损耗，损耗程度远低于大火炒菜或长时间炖煮！',
+                fact:'💡 科学真相：射线是能量，照过即走不残留！辐照 ≠ 放射性污染！',
+                law:'GB18524',
+                followUp:{s:'年轻宝妈小周',t:'原来是这个原理，那我放心了。不过国家对这个剂量有硬性规定吗？有没有什么法律或标准管着那些加工厂，万一他们照多了怎么办？'}
+            },
+            {
+                btnText:'💡 第三步：亮法规支撑',
+                btnIcon:'💡',
+                options:[
+                    {text:'国家对辐照食品有严格监管，所有上市产品都符合安全标准，不必担心营养问题。',isCorrect:false,whyWrong:'这条答案避重就轻，只说"有监管"，没有给出具体标准（10kGy封顶剂量）和营养损耗对比数据。'},
+                    {text:'我国有强制性标准《食品辐照加工卫生规范》（GB18524），严格限制其累积剂量不得超过10kGy。同时新通过的《原子能法》第36条也严格监管核技术应用资质。',isCorrect:true,whyWrong:''},
+                    {text:'《原子能法》规定核技术应用单位要取得资质，所以正规辐照食品是安全的，可以放心买。',isCorrect:false,whyWrong:'只说"有法规管着"，但没有回答追问的核心问题"剂量有没有具体标准"，避开了具体数据。'}
+                ],
+                brief:'⚖️【亮法规支撑】\n大伙放心，咱们国家的法律和国家标准把这道关卡守得死死的！\n\n首先，国家有强制性食品安全标准《食品安全国家标准 食品辐照加工卫生规范》（GB18524-2016），严厉规定：食品辐照累积剂量最高不得超过10kGy，且严禁通过重复辐照来掩盖食品劣变！在这个标准下，营养损耗微乎其微。',
+                detail:'此外，我国新通过的《中华人民共和国原子能法》第36条明确规定：从事核技术应用生产经营活动的单位，应当依法取得相应的资质，严格执行各环节的管理规定！无证、超量加工属于严重违法！',
+                fact:'⚖️ 法律+标准双重保障：GB18524强制限定10kGy剂量，《原子能法》严管资质！',
+                law:'GB18524',
+                followUp:{s:'街坊老周',t:'法律和标准挺硬气的。那我们普通老百姓去超市买东西，怎么才能知道哪些是辐照食品，哪些不是呢？我们平时该怎么选？'}
+            },
+            {
+                btnText:'📋 第四步：我们该怎么做',
+                btnIcon:'📋',
+                options:[
+                    {text:'辐照食品虽然安全，但毕竟是核技术处理的，能不吃就不吃，尽量买新鲜食材自己做。',isCorrect:false,whyWrong:'暗示"核技术处理=不好"，与科学结论相悖，制造不必要的恐慌。'},
+                    {text:'以后买包装食品先看配料表，看到"辐照"字样就避开，选没有辐照标识的更安心。',isCorrect:false,whyWrong:'建议避开正规辐照食品，与科学安全结论相悖，属于过度反应。'},
+                    {text:'购买时留意包装上的"经辐照处理"标识，根据个人喜好理性选购即可；同时不信、不传相关谣言，拒绝购买宣称"防辐射"的高价保健品骗局。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'📋【我们应该怎么做】\n针对预包装食品，普通人掌握这几点行动指南即可：\n\n一是"理性选购"：根据国家规定，辐照食品在包装上必须清晰标注"经辐照处理"或辐照图标，大家根据自己的喜好和需求正常买就行，它很安全。\n二是"拒绝骗局"：千万别因为恐慌去买网上那些宣称"能排食物辐射"的高价保健品，那全是割韭菜的骗局。',
+                detail:'三是"邻里互助"：以后在群里或朋友圈看到"辐照食品致癌"的短视频，把今天学到的科学原理发给大伙，一起破除恐慌！',
+                fact:'📋 行动指南：认准辐照标识、拒绝保健品骗局、科学认知、邻里互助！',
+                law:'',
+                followUp:null
+            }
+        ],
+        feedback:[
+            {chars:[
+                {n:'李大妈',a:'👩‍🦱',msgs:['哎呀，原来辐照和核辐射不是一回事！白吓了自己一跳😅','以后买凤爪再也不用提心吊胆了😂']},
+                {n:'赵大爷',a:'👴🏿',msgs:['世卫都认证了，那我还有什么好担心的👍','那些博主为了流量什么都敢编！']},
+                {n:'年轻宝妈小周',a:'👩‍👧‍👦',msgs:['这下放心了！以后给孩子买果干不用纠结了😊','科学育儿，拒绝谣言！谢谢小原🙏']},
+                {n:'街坊老周',a:'🧔‍♂️',msgs:['差点被那些谣言骗去买防辐射保健品了！还好问了小原😭','辐照食品原来这么安全，感谢科普！👍']},
+                {n:'邻居吴姐',a:'👩‍🦰',msgs:['差点把家里的好东西都扔了😂 感谢小原！','以后看到这种消息先查证再转发！']}
+            ]}
+        ]
+    },
+    {
+        id:'salt',
+        title:'日本核废水排海，海盐沾辐射，要囤盐！',
+        sender:'张大妈 等5人',
+        groupName:'邻里广场舞群 18人 在线',
+        intro:[
+            {s:'张大妈',t:'老姊妹们快看短视频！日本把核废水排入大海了😱，整片海洋全遭核污染，以后晒出来的海盐全都沾染放射性！'},
+            {s:'刘大爷',t:'我连着刷好几天了，长期吃被污染的盐，日积月累容易诱发癌症、血液病！😰'},
+            {s:'宝妈小陈',t:'糟了，我家两岁宝宝餐餐放盐，孩子抵抗力弱，长期摄入辐射盐容易基因突变，太吓人了😨'},
+            {s:'刘大爷',t:'网上博主说了，多囤加碘盐能抵御核辐射，我一已经开始囤了一大箱💊'}
+        ],
+        stages:[
+            {
+                btnText:'🔍 第一步：查官方通报',
+                btnIcon:'🔍',
+                options:[
+                    {text:'海盐确实可能被污染，但井矿盐和湖盐是安全的，大家尽量买井矿盐就行，也不用囤太多。',isCorrect:false,whyWrong:'暗示"海盐有问题"。实际上正规渠道海盐出厂前有放射性指标检测，不合格严禁上市，无需避开海盐。'},
+                    {text:'我国食盐结构中井矿盐占87%、湖盐占3%、海盐仅占10%。井矿盐和湖盐开采自地下和内陆，与海洋完全无关，且我国食盐储量极其丰富。',isCorrect:true,whyWrong:''},
+                    {text:'国家对食盐有严格检测，超标的不让卖，所以不管什么盐都可以放心吃，不需要囤。',isCorrect:false,whyWrong:'这条答案避重就轻，只说"有检测"，没有解释井矿盐与海洋无关的关键知识点，也没有数据支撑。'}
+                ],
+                brief:'🔍【查官方通报】\n大家真的一丁点都不需要跟风囤盐！\n\n咱们看权威公布的我国食盐结构数据：我国市面上的食用盐，井矿盐高达87%，湖盐占3%，海盐仅仅只有10%！占绝对大头的井矿盐开采自地底深处的岩盐层，湖盐来自内陆盐湖，它们和海洋环境完全不沾边，根本接触不到海洋污染！',
+                detail:'新华网权威通报：仅青海茶卡盐湖的食用盐储量，就足够全国人民吃70年。我国食盐产能极其充沛。\n\n📌 来源：新华网《真别囤了！仅茶卡盐湖储量够全国吃70年》2023年8月',
+                fact:'📋 查证结果：我国食盐87%是井矿盐，开采自地下，与海洋污染完全无关！',
+                law:'食盐专营办法',
+                src:'salt_src',
+                followUp:{s:'居民老王',t:'那市面上卖的那10%的海盐，到底安不安全？万一海盐真被污染了混进市场怎么办？'}
+            },
+            {
+                btnText:'🧠 第二步：讲科学原理',
+                btnIcon:'🧠',
+                options:[
+                    {text:'海盐和井矿盐成分差不多，都是氯化钠，吃起来口感不同是因为矿物质微量元素差异，和有没有放射性完全无关。',isCorrect:false,whyWrong:'这条答案没有正面回答"海盐有没有检测"这个核心问题，只是在说矿物质差异，回避了关键检测流程。'},
+                    {text:'海盐来自大海，确实可能受海洋核污染影响，所以买盐还是要选井矿盐更放心。',isCorrect:false,whyWrong:'完全错误！没有检测、没有数据支撑就暗示海盐有问题。事实上海盐出厂前有严格检测，不合格严禁上市。'},
+                    {text:'海盐生产要经过蒸发结晶等多道多重提纯洗涤工艺，放射性核素极难附着在纯净的氯化钠晶体上，而且出厂前必须通过放射性指标专业检测。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'🧠【讲科学原理】\n从科学和工艺上讲，市面上的正规海盐也是安全的。\n\n第一，核污染水进入大洋会经历巨大的稀释；第二，海盐生产要经过反复的蒸发、结晶、多重提纯洗涤，在这个工艺流程中，放射性核素极难附着在纯净的氯化钠晶体上。最重要的是，海盐出厂前必须通过高灵敏度的放射性指标专业监测，不合格的批次连厂门都出不去！',
+                detail:'我国食盐的产能和国家两级储备非常完善。跟风囤盐毫无必要，受潮结块了反而浪费。',
+                fact:'💡 科学真相：海盐出厂必经放射性检测，稀释与提纯工艺确保合规安全！',
+                law:'食盐专营办法',
+                followUp:{s:'刘大爷',t:'海盐安全就行。但我囤盐其实听博主说，盐里面的"碘"能保护甲状腺、抵抗核辐射，多吃加碘盐到底能不能防辐射？'}
+            },
+            {
+                btnText:'💡 第三步：亮法规支撑',
+                btnIcon:'💡',
+                options:[
+                    {text:'《食盐专营办法》等法规严保食盐标准，且医学论证防辐射需服用单次100mg的特制药用碘片；而加碘盐每公斤仅含20-30mg碘，两者剂量相差数千倍，靠吃盐防辐射完全无效。',isCorrect:true,whyWrong:''},
+                    {text:'碘片是药品，碘盐是食品，两者用途不同。碘盐用来补碘防缺碘，不是用来防辐射的。',isCorrect:false,whyWrong:'说的结论没错，但没有回答追问的核心问题"碘盐防辐射有没有效"，回避了关键。'},
+                    {text:'碘片能防辐射是因为含碘量大，碘盐含碘量太小，平时吃可以补充碘，但防不了辐射。',isCorrect:false,whyWrong:'逻辑对但答非所问，追问问的是碘盐防辐射有没有效，回答却在说碘片和碘盐的区别。'}
+                ],
+                brief:'⚖️【亮法规支撑】\n吃碘盐防辐射这个说法，在医学和标准上完全是不成立的！\n\n真正能在核事故应急中保护甲状腺的是药用碘片（碘化钾片），它的单次服用剂量高达100-300毫克。而根据我国卫生强化食品标准，加碘食盐每公斤仅含有20-30毫克的碘。要想达到一片药用碘片的防辐射剂量，必须一次性猛吞近10斤的食盐！那在防辐射之前，人就已经急性盐中毒了。',
+                detail:'我国《食盐专营办法》第19条强制规定：禁止销售不符合食品安全标准的食盐。质量由法律死守，大家千万别盲目用食品去替代处方药！',
+                fact:'⚖️ 法规与剂量科学：碘盐中碘含量极低，与药用碘片相差数千倍，防辐射完全无效！',
+                law:'食盐专营办法',
+                followUp:{s:'张大妈',t:'原来吃盐根本防不了辐射啊！那现在有些无良商贩，故意在网上造谣说盐要涨价、鼓动我们老年人去抢购囤盐，对这种行为法律管不管？我们能去哪揭发他们？'}
+            },
+            {
+                btnText:'📋 第四步：我们该怎么做',
+                btnIcon:'📋',
+                options:[
+                    {text:'囤盐的人太多导致市场混乱，建议大家举报到网络平台，让平台把这些造谣视频下架。',isCorrect:false,whyWrong:'造谣哄抬物价属于市场监管范畴，举报渠道是12315或市场监督管理局，不只是网络平台删视频。'},
+                    {text:'①按需理性购买食盐，拒绝盲目跟风囤积 ②采信官方权威发布，不信谣不传谣 ③发现恶意造谣、哄抬盐价的行为，立刻拨打12315热线向市场监管部门举报。',isCorrect:true,whyWrong:''},
+                    {text:'网络谣言太多了，普通人管不了那么多，不转发就是了，自己不囤就行。',isCorrect:false,whyWrong:'过于消极放任。发现恶意造谣囤积居奇的行为，普通消费者有举报的正当权利和渠道。'}
+                ],
+                brief:'📋【我们应该怎么做】\n法律当然管，而且抓得很严！碰到这种造谣哄抬物价的，普通老百姓有正当的举报权利！\n\n大伙记住这三步行动指南：\n\n第一，"理性不跟风"：依据家里日常消耗按需买盐，绝不盲目囤积，不给无良商家割韭菜的机会。\n第二，"认准官方渠道"：只相信生态环境部、市场监督管理局等官方发布的辐射监测数据和公告。',
+                detail:'第三，"坚决反击造谣"：如果在菜市场或网上发现有人恶意造谣盐要断货、借机哄抬盐价，请立刻拨打12315消费者投诉举报热线，或者向当地市场监督管理局写信举报，让法律制裁他们！',
+                fact:'📋 行动指南：按需购买不跟风，发现恶意造谣哄抬物价拨打12315严厉举报！',
+                law:'',
+                followUp:null
+            }
+        ],
+        feedback:[
+            {chars:[
+                {n:'张大妈',a:'👩',msgs:['哎呀！原来我家吃的主要是井矿盐！盐都买多了😭','以后广场舞群里有人发这个，我就把今天学的讲给他们听💪']},
+                {n:'刘大爷',a:'👴',msgs:['我去！原来碘盐防不了辐射，亏我囤了那么多😂','活了这么多年，今天才知道盐还分这么多种类👍']},
+                {n:'居民老王',a:'🧔',msgs:['差点跟风被割韭菜了😂 感谢小原！','科学辟谣，从我做起！🇨🇳']}
+            ]}
+        ]
+    },
+    {
+        id:'nuke_power',
+        title:'核电站有辐射危害！吃碘片防辐射！',
+        sender:'张大妈 等4人',
+        groupName:'小区邻里群 22人 在线',
+        intro:[
+            {s:'张大妈',t:'我刷短视频听说，城郊那个核电站常年泄漏辐射，咱们就在周边住着，常年暴露在辐射里，时间久了容易诱发癌症、白血病。😱'},
+            {s:'刘大爷',t:'可不是嘛，辐射慢慢渗透土壤、地下水，咱们本地种的蔬菜、日常自来水全都被核污染了！😰'},
+            {s:'张大妈',t:'网上有人支招，住在核电站边上只能靠吃药避险，天天吃碘片就能中和体内辐射！💊'},
+            {s:'刘大爷',t:'我信这个，已经找人大批量买了碘片，全家从老人到孩子天天坚持服用！🙏'}
+        ],
+        stages:[
+            {
+                btnText:'🔍 第一步：查官方通报',
+                btnIcon:'🔍',
+                options:[
+                    {text:'国家辐射环境监测网常年在核电站周边布设实时监测点位，环境自动站的数据表明空气吸收剂量率完全在天然本底涨落范围内，无任何异常。',isCorrect:true,whyWrong:''},
+                    {text:'国家有严格的核电站安全标准，核电站周围的辐射水平都在国家标准允许范围内，长期居住是安全的。',isCorrect:false,whyWrong:'只说"有标准"，没说明数据来源和具体结论，回避了"有第三方监测"这个关键点。'},
+                    {text:'核电站的监测数据都是实时上报的，如果有异常会立刻停机检修，所以住在周边是安全的。',isCorrect:false,whyWrong:'暗示"可能有问题，只是能及时处理"，没有正面说明"本来就没问题"。'}
+                ],
+                brief:'🔍【查官方通报】\n城郊核电站泄漏辐射完全是瞎编的，千万别自己吓自己！\n\n我国建立了极其严密的国家辐射环境监测网，在各个核电站周边常年布设了大量的实时自动监测点位。生态环境部最新通报的环境监测数据表明：各核电基地周围自动站的空气吸收剂量率，完全处于当地天然本底涨落范围内。这里的辐射水平和没有核电站的地方一模一样，根本没有因运行引起的任何异常！',
+                detail:'正常工况下的核电站对周边土壤、水源和农作物绝对没有污染，数据天天在线公示。\n\n📌 数据来源：生态环境部辐射环境监测技术中心',
+                fact:'📋 官方数据：核电基地周边辐射监测毫无异常，始终处于天然本底水平，非常安全！',
+                law:'污染防治法',
+                src:'nuke_power_src',
+                followUp:{s:'刘大爷',t:'小原啊，虽然通报说数据正常。但大伙心里犯嘀咕，那核电站里可是搞核裂变的啊，怎么可能一丁点辐射都不漏出来？它到底是用啥科学手段给堵在里面的？'}
+            },
+            {
+                btnText:'🧠 第二步：讲科学原理',
+                btnIcon:'🧠',
+                options:[
+                    {text:'核电站外面装有非常厚的铅板和水泥墙，可以把所有的辐射全部挡住，只要墙不倒，辐射就绝对出不来。',isCorrect:false,whyWrong:'没有正面解释正常运行时的屏障机制，只是强调"墙"的阻挡作用，避开了核电站四道屏障的设计原理。'},
+                    {text:'核电站的冷却水都是经过特殊化学药剂处理的，可以中和掉里面的放射性，所以流出来的水和普通自来水一样干净。',isCorrect:false,whyWrong:'冷却水不接触放射性物质，答非所问，没有解释核电站的四道屏障设计。'},
+                    {text:'核电站本质是"烧开水发电"，其核反应堆设计有燃料芯块、压力容器和安全壳等四道实体屏障，放射性物质被牢牢锁死在最里层，正常运行时绝不会外泄。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'🧠【讲科学原理】\n核电站的发电机制和物理结构，在科学上就锁死了辐射外泄的可能。\n\n首先，核电站本质上其实是"烧开水发电"，核裂变只负责提供热量。其次，现代核电站设计拥有"燃料芯块、燃料包壳、压力容器和安全壳"四道重型实体屏障。在物理机制上，放射性物质被层层包裹、牢牢锁在最里层。核电站只是利用回路把热量传出来烧水，日常运行根本不会有放射性污染物漏到外面来！',
+                detail:'而且核电站外围由国家建立独立的第三方监测网络，数据全天候公开，不接受任何数据操纵。',
+                fact:'💡 科学真相：核电站靠四道实体屏障锁死核素，正常运行对周边环境零污染！',
+                law:'污染防治法',
+                followUp:{s:'刘大爷',t:'原来是多重保险锁死了啊。那我再顺着问问：刚才你说的那个国家监测网络，到底是谁在管？数据该不会是核电站自己测了往上报的吧？咱们老百姓上哪能盯着这真实数据？'}
+            },
+            {
+                btnText:'💡 第三步：亮法规支撑',
+                btnIcon:'💡',
+                options:[
+                    {text:'《原子能法》和《放射性污染防治法》要求核电站遵守辐射防护规定，保障周边居民安全。',isCorrect:false,whyWrong:'说的是正常运行的法律保障，没有回答追问"谁在管监测网络、数据是否可信"这个核心问题。'},
+                    {text:'监测网络由生态环境部等国家职能部门独立运行，不受企业干预；《放射性污染防治法》第10条法定确立了该公开监测制度，公众在生态环境部官网随时可查真实数据。',isCorrect:true,whyWrong:''},
+                    {text:'国家有完善的核事故应急体系，万一出事政府会处理，普通居民不需要自己操心准备碘片。',isCorrect:false,whyWrong:'说的是核事故应急，没有回答追问"第三方监测网络怎么运行、谁在管"这个核心问题。'}
+                ],
+                brief:'⚖️【亮法规支撑】\n大爷放心，科学机制上绝不允许企业"既当裁判又当运动员"，法律早就强制规范好了！\n\n根据《中华人民共和国放射性污染防治法》第10条，国家强制建立放射性污染监测和信息公开制度。国家辐射环境监测网是由生态环境部等环保部门独立建立并直接管理的第三方网络，其设备运行和数据直接传送给国家控制中心，核电企业根本插不进手。',
+                detail:'监测网络的数据在生态环境部官网上每一分钟都实时公开，人人都可以去查。顺便提一句，短视频里养生博主让大家天天吃药片预防，是严重违反我国《辐射防护最优化原则》的处方药滥用行为，极易导致慢性碘中毒、伤害甲状腺！',
+                fact:'⚖️ 法律与医学双重警示：放射性污染防治法确保第三方监测数据公开透明；日常私自滥服碘片严重伤身！',
+                law:'污染防治法',
+                followUp:{s:'刘大爷',t:'哎哟，吓死我了，我赶紧把药给收起来！那万一，我说的是万一啊，以后真的要是遇到极端的突发核事故，我们普通老百姓该怎么办？怎么领药、怎么防护呢？'}
+            },
+            {
+                btnText:'📋 第四步：我们该怎么做',
+                btnIcon:'📋',
+                options:[
+                    {text:'核电站虽然有安全保障，但住在周边总归不踏实，有条件的话还是搬远一点更安心。',isCorrect:false,whyWrong:'暗示有风险需要搬离，与科学监测结论完全相悖，制造不必要的恐慌。'},
+                    {text:'虽然核电站本身安全，但万一发生地震等自然灾害，核电站还是可能出事，建议关注应急预案。',isCorrect:false,whyWrong:'把低概率的极端事件当作日常决策的考量，没有必要。'},
+                    {text:'①日常运行无需任何防护，保持正常起居 ②绝不私自买药服药，发生核应急时，严格听从政府通过预案统一发放碘片并指挥撤离 ③不传播群体恐慌。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'📋【我们应该怎么做】\n如果真的发生极端事故，国家有全套健全的应急预案：\n\n请大家记住正确的核应急配合指南：\n\n第一，"日常泰然处之"：核电站正常运行期间，周边居民完全不需要戴口罩或做任何特殊防护，和住在别处毫无区别。\n\n第二，"听从官方指挥"：根据我国《国家核应急预案》，一旦发生事故，地方政府会立即启动应急响应，通过手机短信、广播、电视统一发布指令。',
+                detail:'第三，"统一配发碘片"：符合服用条件的居民，政府会组织专人统一配送、免费发放碘片，并由专业医生明确指导服药剂量和时机。不传谣、不乱跑、听指挥就是最科学的做法！',
+                fact:'📋 行动指南：正常运行无需防护；核应急由国家统筹、政府免费发放碘片，听从官方指挥！',
+                law:'',
+                followUp:null
+            }
+        ],
+        feedback:[
+            {chars:[
+                {n:'张大妈',a:'👩',msgs:['哎呀！原来核电站周边辐射一直在监测范围内！还好没被那些短视频吓到😂','懂了！以后不乱转发那些吓人的消息了👵']},
+                {n:'刘大爷',a:'👴',msgs:['我去！碘片白买了😭 还好没开始吃！','活到老学到老！核电站安全着呢，我这心里踏实多了👍']},
+                {n:'居民老王',a:'🧔',msgs:['还好问了小原！涨知识了！📚','感谢小原！科学辟谣，功德无量🙏']}
+            ]}
+        ]
+    },
+    {
+        id:'ct_radiation',
+        title:'CT辐射会致癌！坚决不能做！',
+        sender:'张大妈 等3人',
+        groupName:'小区邻里群 20人 在线',
+        intro:[
+            {s:'张大妈',t:'我和你们说😯，我刷短视频看着说了，医院CT可不能轻易做啊！'},
+            {s:'李大爷',t:'我也刷到了😱！视频讲做一回CT辐射顶得上几百次X光，辐射留在身体里排不出去！'},
+            {s:'王宝妈',t:'这么吓人😰？孩子咳嗽大夫建议拍CT查肺，幸好我没做。'},
+            {s:'张大妈',t:'你幸亏没让孩子做👍，网上博主说了，多做CT会弄坏人体基因，癌症风险直线上涨⚠️'}
+        ],
+        stages:[
+            {
+                btnText:'🔍 第一步：查官方通报',
+                btnIcon:'🔍',
+                options:[
+                    {text:'CT的辐射剂量虽然比X光高，但现代CT设备都有剂量控制功能，实际辐射量并不大。',isCorrect:false,whyWrong:'没有给出具体数字，只说"不大"，回避了官方通报中的精确数据。'},
+                    {text:'国家卫健委及权威科普通报：常规CT单次胸部平扫辐射剂量仅1-2mSv，单次检查带来的致癌风险极低（约几十万分之一），完全在安全可控范围内。',isCorrect:true,whyWrong:''},
+                    {text:'说"做一次CT等于几百次X光"是把不同部位检查混为一谈了。头部CT剂量确实比胸片高，但没到几百倍。',isCorrect:false,whyWrong:'指出了谣言的问题，但缺少具体数字对比，不够硬核。'}
+                ],
+                brief:'🔍【查官方通报】\n可千万别被营销号把病情给耽误了！\n\n国家卫健委医学科普平台明确通报：医院现代常规CT的肺部平扫剂量仅为1-2毫西弗（mSv）。说它致癌风险突变纯属危言耸听！医学统计表明，单次CT检查引起的随机性辐射致癌风险只有几十万分之一，在医学上属于完全安全可接受的范围。',
+                detail:'网络小视频讲的"一次CT等于几百次 X 光"是故意把单部位低剂量胸片和全身高强度强化扫描进行恶意概念置换，以此来吸引眼球。\n\n📌 来源：人民网科普《从健康传播角度看"拍CT致癌"》2025年4月',
+                fact:'📋 权威数据：常规CT单次剂量仅1-2mSv，处于医学公认的安全照射范围！',
+                law:'射线装置条例',
+                src:'ct_src',
+                followUp:{s:'李大爷',t:'短视频里还讲了，说这种医疗辐射照进身体之后，会像毒素一样留在细胞里排不出去，做多了会累积中毒。这又是真的吗？'}
+            },
+            {
+                btnText:'🧠 第二步：讲科学原理',
+                btnIcon:'🧠',
+                options:[
+                    {text:'老式CT和新式CT的剂量差别主要看扫描参数设置，只要参数调低，老式CT也可以做到和新式CT一样低。',isCorrect:false,whyWrong:'技术上不准确，老式设备的硬件限制无法做到同水平低剂量。'},
+                    {text:'即使是更老式的CT，肺部平扫也在5mSv以下——远低于100mSv的确定性危害阈值。这个剂量与新型CT的1-2mSv同属安全范围。',isCorrect:false,whyWrong:'说的是剂量高低，没有回答追问"X射线会不会留在身体里"这个核心问题。'},
+                    {text:'CT成像使用的是高能X射线，属于电磁波，在检查停止的瞬间就彻底消失，绝不会残留在人体内；且人体具备强大的DNA自我修复机制。',isCorrect:true,whyWrong:''}
+                ],
+                brief:'🧠【讲科学原理】\n医疗辐射绝对不会"留在身体里"，这违背了物理常识。\n\n医院CT用的是X射线，X射线本质上是一种"电磁波"，就像手电筒的光。当机器关闭或者光线穿透人体的瞬间，能量就穿过去了，人体内绝不可能残留任何辐射粒子。至于辐射带来的微量电离，人体细胞随时都在面对大自然天然本底辐射（阳光、土壤等），体内有一套强大的DNA基因自我修复机制，很快就会完成自我修复。',
+                detail:'医学上真正危险的不是做CT，而是因为恐惧、抗拒检查而导致体内的肺炎、肿瘤等早期严重病变被延误诊断，延误病情才是真的要命！',
+                fact:'💡 科学真相：X射线是电磁波，穿透即逝不残留！人体细胞具备天然DNA修复机制！',
+                law:'射线装置条例',
+                followUp:{s:'王宝妈',t:'听懂原理了。但实际去看病时，万一碰上有些不负责任的医院为了赚钱乱开检查怎么办？普通老百姓又不懂医，咱们具体能做点啥来防辐射呢？'}
+            },
+            {
+                btnText:'💡 第三步：亮法规支撑',
+                btnIcon:'💡',
+                options:[
+                    {text:'国家规定CT检查必须由执业医师开具，且有明确的临床指征，所以患者不用担心被滥用。',isCorrect:false,whyWrong:'说的没错但没有引用具体法规条文，不够硬核。'},
+                    {text:'我国《放射性同位素与射线装置安全和防护条例》第38条严格规定，医院放射诊疗必须遵循"医疗照射正当化"和"辐射防护最优原则"，严禁滥开检查。',isCorrect:true,whyWrong:''},
+                    {text:'国际放射防护委员会建议年职业限值20mSv，每年做5-10次CT安全。',isCorrect:false,whyWrong:'这是国际标准，不是中国法规，不符合"亮法规支撑"的步骤要求。'}
+                ],
+                brief:'⚖️【亮法规支撑】\n我国法律对放射诊疗的约束极为严苛，严禁任何形式的医疗滥开检查！\n\n我国国务院颁布的《放射性同位素与射线装置安全和防护条例》第38条强制规定：使用射线装置进行放射诊疗的医疗卫生机构，必须按照"医疗照射正当化"和"辐射防护最优化"的原则，避免一切不必要的照射！医生如果违反规定盲目开具无临床指征的检查，属于严重的违规事故。',
+                detail:'国际放射防护委员会也有配套标准，只有在检查带来的"诊断收益"远大于"辐射风险"时，开具检查单才是合法的、正当的。',
+                fact:'⚖️ 法规保障：《射线装置安全防护条例》规定医院必须坚守"正当化与最优化"原则，严禁滥用CT！',
+                law:'射线装置条例',
+                followUp:{s:'张大妈',t:'法律条文写得挺好。但实际去看病时，普通老百姓又不懂医，咱们具体能做点啥来防护呢？'}
+            },
+            {
+                btnText:'📋 第四步：我们该怎么做',
+                btnIcon:'📋',
+                options:[
+                    {text:'CT检查的风险和收益要权衡：如果不做可能耽误病情，该做就做，不能因噎废食。',isCorrect:false,whyWrong:'说的宏观道理没错，但没有给出具体行动指南，用户不知道实际该怎么做。'},
+                    {text:'①遵医嘱做必要检查，绝不因噎废食 ②行使患者知情权，主动向医生询问检查的必要性或是否有磁共振等无辐射替代方案 ③检查时合理配合穿戴防辐射铅衣。',isCorrect:true,whyWrong:''},
+                    {text:'医生的诊疗决策基于专业判断，患者应该相信医生，主动配合检查是更明智的选择。',isCorrect:false,whyWrong:'没有鼓励患者主动沟通，暗示"患者只需被动配合"，忽视了患者的知情权和参与权。'}
+                ],
+                brief:'📋【我们应该怎么做】\n作为患者，我们在法律上拥有充分的"知情权"，可以采取以下理智的做法：\n\n第一，"主动沟通"：拿到单子时，可以向医生询问检查的必要性，或者询问是否有无辐射替代方案（如B超、磁共振MRI）。如果是治病急需，则要坚决听医生的，绝不能因噎废食。\n\n第二，"做好物理防护"：在正规医院做放射检查时，放射科都有专门保护非检查部位的"铅衣、铅脖套或铅围裙"。',
+                detail:'比如给孩子拍胸片时，可以主动配合医生用铅衣把孩子的腹部、性腺等敏感部位遮盖起来，这样就能把不必要的附带照射降到几乎为零！',
+                fact:'📋 行动指南：科学遵医嘱，行使知情权询问替代方案，主动配合穿戴穿铅衣防护！',
+                law:'',
+                followUp:null
+            }
+        ],
+        feedback:[
+            {chars:[
+                {n:'张大妈',a:'👩',msgs:['我去！差点被那些视频博主害死了😭 还好看到了这条！','记住了！CT该做还得做，别被营销号带沟里💪']},
+                {n:'李大爷',a:'👴',msgs:['原来我之前那视频是标题党啊😰 学到了！','记住了！该检查就检查，千万别延误病情！🙏']},
+                {n:'王宝妈',a:'👩‍👧',msgs:['差点被谣言害了自己！还好看到这条📚','下次邻居群里有人发这个我就把这截图甩过去💪']}
+            ]}
+        ]
+    }
+];
+
+// ============================================================
+// 法规数据库
+// ============================================================
+const LAWS_DB = {
+    '核安全法':{title:'《中华人民共和国核安全法》',desc:'核安全监管基本法律，对核设施选址、建设、运行实行严格许可，监测数据公开透明。',link:'',articles:{}},
+    '原子能法':{
+        title:'《中华人民共和国原子能法》',desc:'2025年9月通过！确立核能与核技术和平利用原则，对核电、核医疗、核技术应用实行全方位安全监管。',
+        link:'https://www.caea.gov.cn/n6760401/n6760402/c6827750/content.html',
+        articles:{
+            28:'第28条：核电发展规划按照规定的程序报国务院批准。核电站建设项目由国务院核准。',
+            30:'第30条：核反应堆的选址、设计、建造、调试、运行和管理等应当遵守有关法律、行政法规的规定。',
+            31:'第31条：核设施营运单位应当按照国家规定预提核设施退役费用、放射性废物处置费用。',
+            32:'第32条：国家支持放射性同位素、射线装置等在工业、农业、生物、医疗卫生等领域的应用。',
+            33:'第33条：国务院核工业、生态环境、公安、卫生健康等主管部门，按职责分工加强对核技术应用活动的管理和监督。',
+            36:'第36条：从事核技术应用生产经营活动的单位，应当依法取得相应的资质，严格执行放射性同位素和射线装置在生产、运输、销售、使用、贮存、处置各环节的管理规定。',
+            37:'第37条：核技术应用生产经营单位使用放射源的场所和生产放射性同位素的场所，以及终结运行后产生放射性污染的射线装置，应当依法实施退役。',
+            40:'第40条：从事原子能研究、开发和利用活动的单位，应当遵守国家有关辐射防护的规定，保护公众和从业人员的安全与健康，保护生态环境。',
+            52:'第52条：禁止将放射性废物和被放射性污染的物品输入中华人民共和国境内或者经中华人民共和国境内转移。'
+        }
+    },
+    '污染防治法':{
+        title:'《中华人民共和国放射性污染防治法》',desc:'对放射性废水、废气、固体废物严格管控，保护环境和公众健康。',
+        link:'https://www.caea.gov.cn/n6760401/n6760402/c6827750/content.html',
+        articles:{
+            9:'第9条：国家放射性污染防治标准由国务院环境保护行政主管部门根据环境安全要求、国家经济技术条件制定。',
+            10:'第10条：国家建立放射性污染监测制度。国务院环境保护行政主管部门会同国务院其他有关部门组织环境监测网络，对放射性污染实施监测管理。'
+        }
+    },
+    'irradiated_food_src':{title:'人民网科普：辐照食品和辐射有关？',desc:'来源：人民网科普文章，2024年12月发布',link:'http://jl.people.com.cn/n2/2024/1206/c349771-41067151.html',articles:{}},
+    'salt_src':{title:'新华网：真别囤了！仅茶卡盐湖食用盐储量就够全国吃70年',desc:'来源：新华网新闻报道，2023年8月发布',link:'https://www.news.cn/politics/2023-08/26/c_1129825713.htm',articles:{}},
+    'ct_src':{title:'人民网科普：从健康传播角度看"拍CT致癌"',desc:'来源：人民网科普文章，2025年4月发布',link:'http://sc.people.com.cn/n2/2025/0425/c345167-41208390.html',articles:{}},
+    'nuke_power_src':{title:'生态环境部：国家辐射环境监测数据',desc:'来源：生态环境部辐射环境监测技术中心，数据实时公开可查',link:'https://www.mee.gov.cn/hjzl/',articles:{}},
+    'GB18524':{title:'《食品安全国家标准 食品辐照加工卫生规范》GB18524-2016',desc:'国家强制标准，严格规范食品辐照加工全过程，保障辐照食品安全可控。',link:'https://faolex.fao.org/docs/pdf/chn215939.pdf',articles:{dose:'规定食品辐照累积剂量不超过10kGy，重复辐照食品的累积剂量同样受此限制，远达不到使物品产生辐射的活化条件。'}},
+    '食盐专营办法':{title:'《食盐专营办法》',desc:'国家食盐专营管理法规，保障食盐质量安全，规范市场秩序。',link:'https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_6f39f3a49fa548fda23c96d26423a2e5.html',articles:{19:'第19条：禁止销售不符合食品安全标准的食盐。不合格食盐严禁上市！'}},
+    '射线装置条例':{title:'《放射性同位素与射线装置安全和防护条例》',desc:'规范医疗放射诊疗行为，保障患者和受检者健康权益。',link:'https://www.caea.gov.cn/n6760401/n6760402/c6827743/content.html',articles:{38:'第38条：使用射线装置进行放射诊疗的医疗卫生机构，应当制定质量保证方案，遵守质量保证监测规范，按照医疗照射正当化和辐射防护最优化的原则，避免一切不必要的照射，并事先告知患者和受检者辐射对健康的潜在影响。'}},
+    '应急预案':{title:'《国家核应急预案》',desc:'完善的核事故应急响应体系，确保突发核事故时能迅速有序应对。',link:'https://www.mee.gov.cn/zjfw/hjyw/hyyj/202301/t20230117_1012474.shtml',articles:{}}
+};
+
+// ============================================================
+// 音效
+// ============================================================
+let audioCtx=null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playClick(){const c=initAudio(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=800;o.type='sine';g.gain.setValueAtTime(0.3,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.1);o.start();o.stop(c.currentTime+0.1);}
+function playSend(){const c=initAudio(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.setValueAtTime(600,c.currentTime);o.frequency.setValueAtTime(900,c.currentTime+0.05);o.type='sine';g.gain.setValueAtTime(0.2,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.15);o.start();o.stop(c.currentTime+0.15);}
+function playDebunk(){const c=initAudio();[523,659,784].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type='sine';const t=c.currentTime+i*0.1;g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.01,t+0.2);o.start(t);o.stop(t+0.2);});}
+function playBadge(){const c=initAudio(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.setValueAtTime(1000,c.currentTime);o.frequency.setValueAtTime(1500,c.currentTime+0.1);o.frequency.setValueAtTime(2000,c.currentTime+0.2);o.type='triangle';g.gain.setValueAtTime(0.2,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.4);o.start();o.stop(c.currentTime+0.4);}
+function playFollowUp(){const c=initAudio(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.setValueAtTime(400,c.currentTime);o.frequency.setValueAtTime(600,c.currentTime+0.05);o.type='sine';g.gain.setValueAtTime(0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.12);o.start();o.stop(c.currentTime+0.12);}
+function playWrong(){const c=initAudio();[300,250,200,180].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type='sawtooth';const t=c.currentTime+i*0.08;g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.01,t+0.1);o.start(t);o.stop(t+0.1);});}
+function playCelebrate(){const c=initAudio();const notes=[523,659,784,1047];notes.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type='sine';const t=c.currentTime+i*0.15;g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.01,t+0.3);o.start(t);o.stop(t+0.3);});}
+
+// ============================================================
+// 侧边面板
+// ============================================================
+let shownLaws=[];
+function addToSidePanel(type){
+    const law=LAWS_DB[type];if(!law||shownLaws.includes(type))return;
+    shownLaws.push(type);
+    const sc=document.getElementById('sideContent');
+    const se=document.getElementById('sideEmpty');
+    const sb=document.getElementById('sideClearBtn');
+    const lc=document.getElementById('lawCount');
+    if(se)se.style.display='none';
+    if(sb)sb.style.display='block';
+    if(lc)lc.textContent=shownLaws.length+' 条法规';
+    const card=document.createElement('div');card.className='law-card-side';
+    let html='<div class="law-title-side">📜 '+law.title+'</div><div class="law-desc-side">'+law.desc+'</div>';
+    for(const[n,t]of Object.entries(law.articles))html+='<div class="law-article-side">'+t+'</div>';
+    if(law.link){
+        if(type.endsWith('_src')){
+            html+='<a class="law-link-side" href="'+law.link+'" target="_blank">📎 查看科普来源</a>';
+        } else {
+            html+='<a class="law-link-side" href="'+law.link+'" target="_blank">🔗 查看完整法律条文</a>';
+        }
+    }
+    card.innerHTML=html;sc.appendChild(card);sc.scrollTop=sc.scrollHeight;
+    addTip('📜 相关法规已加入','#667eea');
+}
+function clearSidePanel(){
+    shownLaws=[];
+    const sc=document.getElementById('sideContent');
+    sc.querySelectorAll('.law-card-side').forEach(c=>c.remove());
+    const se=document.getElementById('sideEmpty');
+    const sb=document.getElementById('sideClearBtn');
+    const lc=document.getElementById('lawCount');
+    if(se)se.style.display='flex';
+    if(sb)sb.style.display='none';
+    if(lc)lc.textContent='暂无';
+}
+
+// ============================================================
+// DOM 引用
+// ============================================================
+const chatArea=document.getElementById('chatArea');
+const rumorHint=document.getElementById('rumorHint');
+const rumorTitle=document.getElementById('rumorTitle');
+const rumorSender=document.getElementById('rumorSender');
+const welcomeTip=document.getElementById('welcomeTip');
+const memberCount=document.getElementById('memberCount');
+const mainActionBtn=document.getElementById('mainActionBtn');
+const mainBtnText=document.getElementById('mainBtnText');
+const mainBtnIcon=document.getElementById('mainBtnIcon');
+const optionPopup=document.getElementById('optionPopup');
+const gameoverPopup=document.getElementById('gameoverPopup');
+const newChallengeArea=document.getElementById('newChallengeArea');
+
+// ============================================================
+// 游戏状态
+// ============================================================
+let gameActive=false;     // 谣言是否处于活跃状态（可答题）
+let gameFinished=false;   // 当前轮是否已完成（成功或失败）
+let currentRumor=null;
+let currentStage=0;       // 当前步骤索引 0-3
+let totalBadges=0;
+let usedRumorIndices=new Set();
+let completedRumorIds=new Set(); // 记录已完成辟谣的ID
+let followUpTimeout=null;
+let selectedRumorIdFromSplash='random';
+let pendingTimers=[];
+function schedule(fn,delay){const id=setTimeout(fn,delay);pendingTimers.push(id);return id;}
+function clearAllPending(){
+    pendingTimers.forEach(id=>clearTimeout(id));
+    pendingTimers=[];
+    if(followUpTimeout){clearTimeout(followUpTimeout);followUpTimeout=null;}
+    chatArea.querySelectorAll('.system-tip').forEach(t=>t.remove());
+    chatArea.querySelectorAll('.new-challenge-btn').forEach(b=>b.remove());
+}
+
+// ============================================================
+// 消息工具
+// ============================================================
+function addMsg(type,name,text,avatar,sentiment){
+    if(avatar===undefined||avatar===null)avatar='';
+    if(sentiment===undefined||sentiment===null)sentiment='neutral';
+    const div=document.createElement('div');
+    div.className='message '+(type==='me'?'my-message':'other-message '+sentiment);
+    const av=document.createElement('div');
+    av.className='avatar'+(type==='me'?' my-avatar':'');
+    av.textContent=avatar||AVATAR_MAP[name]||'👤';
+    const wrap=document.createElement('div');
+    const nm=document.createElement('div');nm.className='name-tag';nm.textContent=name;
+    const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;
+    wrap.appendChild(nm);wrap.appendChild(bubble);
+    div.appendChild(av);div.appendChild(wrap);
+    chatArea.appendChild(div);chatArea.scrollTop=chatArea.scrollHeight;
+}
+function addTip(text,color){
+    const t=document.createElement('div');t.className='system-tip';t.style.color=color||'#888';t.textContent=text;
+    chatArea.appendChild(t);chatArea.scrollTop=chatArea.scrollHeight;setTimeout(()=>t.remove(),3500);
+}
+function showToast(text){
+    const t=document.createElement('div');t.className='badge-toast';t.textContent=text;
+    document.body.appendChild(t);setTimeout(()=>t.remove(),2200);
+}
+function showInlineLawHint(type){
+    // 已移至法规面板，此处不再弹摘要卡片
+}
+
+// ============================================================
+// 进度小点更新
+// ============================================================
+function updatePips(){
+    for(let i=0;i<4;i++){
+        const pip=document.getElementById('pip'+i);
+        if(!pip)continue;
+        pip.className='progress-pip';
+        if(i<currentStage)pip.classList.add('done');
+        else if(i===currentStage && gameActive)pip.classList.add('active');
+        else pip.classList.add('locked');
+    }
+}
+
+// ============================================================
+// 主按钮状态更新
+// ============================================================
+function updateMainBtn(){
+    if(!gameActive && !gameFinished){mainBtnText.textContent='等待新挑战...';mainBtnIcon.textContent='🎯';mainActionBtn.classList.remove('pulse');mainActionBtn.classList.add('locked');return;}
+    if(gameFinished){mainBtnText.textContent='辟谣完成！';mainBtnIcon.textContent='✅';mainActionBtn.classList.remove('pulse');mainActionBtn.classList.add('locked');return;}
+    if(currentStage>=4){mainBtnText.textContent='辟谣完成！';mainBtnIcon.textContent='✅';mainActionBtn.classList.remove('pulse');mainActionBtn.classList.add('locked');return;}
+    const stage=currentRumor.stages[currentStage];
+    mainBtnText.textContent=stage.btnText;
+    mainBtnIcon.textContent=stage.btnIcon;
+    mainActionBtn.classList.remove('locked');
+    mainActionBtn.classList.add('pulse');
+}
+
+// ============================================================
+// 处理选项点击
+// ============================================================
+function handleOption(btn, optIdx){
+    const isCorrect=btn.dataset.correct==='true';
+    btn.parentElement.querySelectorAll('.option-item').forEach(b=>b.style.pointerEvents='none');
+    if(isCorrect){
+        btn.classList.add('correct');
+        schedule(()=>{optionPopup.style.display='none';optionPopup.innerHTML='';handleCorrectAnswer();},500);
+    } else {
+        btn.classList.add('wrong');
+        playWrong();
+        const opt=currentRumor.stages[currentStage].options[optIdx];
+        // 在选项卡底部追加错误解析区
+        const panel=btn.closest('.option-panel');
+        if(panel){
+            const reasonDiv=document.createElement('div');
+            reasonDiv.style.cssText='background:#fff3e0;border-radius:12px;padding:14px;margin-top:14px;border-left:3px solid #e07b00';
+            reasonDiv.innerHTML='<div style="font-size:11px;color:#e07b00;font-weight:bold;margin-bottom:6px">✖ 错在哪里</div>'+
+                '<div style="font-size:13px;color:#555;line-height:1.6">'+opt.whyWrong+'</div>';
+            panel.appendChild(reasonDiv);
+            // 重选本题按钮
+            const retryBtn=document.createElement('button');
+            retryBtn.style.cssText='display:block;width:100%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:13px 0;border-radius:30px;font-weight:bold;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(102,126,234,0.35);margin-top:14px';
+            retryBtn.textContent='↩️ 重选本题';
+            retryBtn.onclick=()=>{
+                showQuestion();
+            };
+            panel.appendChild(retryBtn);
+        }
+    }
+}
+
+function showQuestion(){
+    // 进入下一题时，清理上一题遗留的 tips、事实摘要等中间状态
+    chatArea.querySelectorAll('.system-tip,.fact-summary,.src-card').forEach(el=>el.remove());
+    const stage=currentRumor.stages[currentStage];
+    if(!stage || !stage.options) return;
+    const opts=stage.options;
+    let html=
+        '<div class="option-panel">'+
+        '<div class="option-title"><strong>'+stage.btnText.replace(/^[^\s]+\s/,'')+'</strong><br><span style="color:#888;font-size:12px;">请选择你认为最合适的回复方式</span></div>'+
+        '<div class="option-desc">选错会导致科普失败 ⚠️</div>';
+    opts.forEach((opt,i)=>{
+        html+='<button class="option-item" data-correct="'+opt.isCorrect+'" data-opt-idx="'+i+'" onclick="handleOption(this,'+i+')">'+opt.text+'</button>';
+    });
+    html+='</div></div>';
+    optionPopup.innerHTML=html;
+    optionPopup.style.display='block';
+}
+
+function resetCurrentRumorStage(){
+    // 只重置当前谣言的当前步骤，不影响整体进度
+    if(followUpTimeout){clearTimeout(followUpTimeout);followUpTimeout=null;}
+    const items=chatArea.querySelectorAll('.message,.law-hint-card,.system-tip,.option-overlay,.src-card,.fact-summary');
+    items.forEach(m=>m.remove());
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>'+currentRumor.title+'</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— '+currentRumor.sender+'</span></div>';
+    rumorHint.style.borderLeftColor='#f4a261';
+    rumorHint.style.background='#fff3e0';
+    updatePips();
+    updateMainBtn();
+    gameActive=true;
+    schedule(()=>triggerRumor(),200);
+}
+
+// ============================================================
+// 答对处理
+// ============================================================
+function handleCorrectAnswer(){
+    const stage=currentRumor.stages[currentStage];
+    playDebunk();
+    // 发送第一段（选中的回答内容）
+    addMsg('me','核规志愿者·小原',stage.brief,'👨‍🔬');
+    // 发送第二段（详细补充，400ms后）
+    if(stage.detail){
+        schedule(()=>{
+            if(!gameActive)return;
+            addMsg('me','核规志愿者·小原',stage.detail,'👨‍🔬');
+        },400);
+    }
+    // 发送科普来源卡片（300ms），蓝色内嵌独立卡片，可点击跳转
+    if(stage.src){
+        schedule(()=>{
+            const srcData=LAWS_DB[stage.src];
+            if(!srcData||!srcData.link)return;
+            const card=document.createElement('div');card.className='src-card';
+            card.style.cssText='background:#edf2ff;border-radius:14px;padding:12px 14px;margin:6px 0;border-left:3px solid #667eea;cursor:pointer;font-size:12px;color:#555;display:flex;align-items:center;gap:8px;transition:background 0.15s';
+            card.innerHTML='<span style="font-size:16px;">📎</span><span style="flex:1"><span style="color:#333;font-weight:bold">科普来源</span><br><span style="font-size:11px;color:#667eea">'+srcData.title+'</span></span><span style="font-size:13px;color:#667eea">→</span>';
+            card.onclick=()=>window.open(srcData.link,'_blank');
+            card.onmouseenter=()=>card.style.background='#e0e5ff';
+            card.onmouseleave=()=>card.style.background='#edf2ff';
+            chatArea.appendChild(card);chatArea.scrollTop=chatArea.scrollHeight;
+        },300);
+    }
+    // 发送事实摘要（400ms）
+    schedule(()=>{
+        const c=document.createElement('div');c.className='fact-summary';
+        c.style.cssText='background:#e0f2e9;padding:10px 12px;border-radius:12px;font-size:13px;margin:6px 0;border-left:3px solid #1a936f';
+        c.textContent=stage.fact;
+        chatArea.appendChild(c);chatArea.scrollTop=chatArea.scrollHeight;
+    },400);
+    // 推送法规到右侧面板（如有）
+    if(stage.law){
+        addToSidePanel(stage.law);
+    }
+
+    // =============================================
+    // 所有消息 schedule 完成后，再推进步骤和 UI
+    // =============================================
+    const isLastStage=(currentStage===3);
+    const lastMsgDelay=isLastStage?900:300; // 最后一步等科普来源卡；中间步骤等事实摘要
+
+    schedule(()=>{
+        if(!gameActive)return;
+        currentStage++;
+        updatePips();
+        updateMainBtn();
+        if(currentStage>=4){
+            completeDebunk();
+        } else {
+            if(stage.followUp){
+                scheduleFollowUp(stage.followUp);
+            }
+            addTip('💪 辟谣进度 '+(currentStage)+'/4！继续下一步~','#2c7da0');
+            showToast('🔬 +1 科学影响力');
+        }
+    },lastMsgDelay+200);
+}
+
+// ============================================================
+// 追问
+// ============================================================
+function scheduleFollowUp(fu){
+    if(followUpTimeout)clearTimeout(followUpTimeout);
+    followUpTimeout=schedule(()=>{
+        if(!gameActive||currentStage>=4)return;
+        playFollowUp();
+        addMsg('other',fu.s,fu.t,AVATAR_MAP[fu.s]||'👤','neutral');
+    },4500);
+}
+
+// ============================================================
+// 入场动画
+// ============================================================
+function showNuclearSplash(){
+    const splash=document.createElement('div');
+    splash.className='nuclear-splash';
+    splash.id='nuclearSplash';
+    
+    let optionsHtml = '<option value="random">🎲 默认随机分配谣言</option>';
+    RUMORS.forEach(r => {
+        optionsHtml += `<option value="${r.id}">🔍 关注：${r.title}</option>`;
+    });
+
+    splash.innerHTML = `
+        <div class="atom-wrap">
+            <div class="atom-core"></div>
+            <div class="atom-orbit"><div class="electron"></div></div>
+            <div class="atom-orbit"><div class="electron"></div></div>
+            <div class="atom-orbit"><div class="electron"></div></div>
+        </div>
+        <div class="splash-tagline">⚛️ 核规联盟 ⚛️</div>
+        <div class="splash-mission">
+            <div class="splash-mission-label">— MISSION DETECTOR —</div>
+            <div class="splash-mission-text" id="splashTypingText"></div>
+        </div>
+        
+        <div class="splash-interactive-zone" id="interactiveZone">
+            <div class="rumor-selector-container">
+                <span class="selector-title">请选择你想攻克的邻里谣言类型（鼠标悬停可看全称）：</span>
+                <select class="rumor-selector" id="splashRumorSelector" title="🎲 默认随机分派新陈谣言" onchange="updateSelectorTooltip(this)">
+                    ${optionsHtml}
+                </select>
+            </div>
+            <button class="splash-start-btn" onclick="launchPlatformSystem()">🛡️ 确认并进入系统</button>
+        </div>
+
+        <div class="splash-pills">
+            <span class="splash-pill">核安全</span>
+            <span class="splash-pill">核科普</span>
+            <span class="splash-pill">核+X</span>
+        </div>
+        <div class="splash-footer">用科学击破谣言 · 用理性守护日常</div>
+    `;
+    document.body.insertBefore(splash, document.body.firstChild);
+    
+    const phrase1 = "您已接入核规联盟群聊系统";
+    const phrase2 = "请扮演志愿者小原运用硬核法规与科学原理击破邻里谣言";
+    const box = document.getElementById('splashTypingText');
+    
+    typeEngine(box, phrase1, 50, () => {
+        setTimeout(() => {
+            box.innerHTML = '';
+            typeEngine(box, phrase2, 45, () => {
+                setTimeout(() => {
+                    document.getElementById('interactiveZone').classList.add('show');
+                }, 2000);
+            });
+        }, 2000);
+    });
+}
+
+function typeEngine(target, content, pace, next) {
+    let cursor = 0;
+    function action() {
+        if (cursor < content.length) {
+            target.innerHTML += content.charAt(cursor);
+            cursor++;
+            setTimeout(action, pace);
+        } else if (next) {
+            next();
+        }
+    }
+    action();
+}
+
+function updateSelectorTooltip(selectEl) {
+    selectedRumorIdFromSplash = selectEl.value;
+    const selectedOptionText = selectEl.options[selectEl.selectedIndex].text;
+    selectEl.title = selectedOptionText; 
+}
+
+function launchPlatformSystem() {
+    playClick();
+    const splash = document.getElementById('nuclearSplash');
+    if(splash) {
+        splash.classList.add('fade-out');
+        setTimeout(() => {
+            splash.remove();
+            initializeMainChatFlow(); 
+        }, 500);
+    }
+}
+
+// ============================================================
+// 彩带效果
+// ============================================================
+function createConfetti(){
+    for(let i=0;i<80;i++){
+        const c=document.createElement('div');
+        c.style.cssText='position:fixed;left:'+(Math.random()*100)+'%;top:-16px;width:'+(5+Math.random()*7)+'px;height:'+(5+Math.random()*7)+'px;background:hsl('+(Math.random()*360)+',80%,60%);border-radius:'+(Math.random()>0.5?'50%':'2px')+';z-index:10001;pointer-events:none;animation:fall '+(1.5+Math.random()*1.5)+'s linear forwards;animation-delay:'+(Math.random()*0.5)+'s';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),4000);
+    }
+}
+
+// ============================================================
+// 结束动画：成就解锁
+// ============================================================
+const RUMOR_ICONS={'irradiated_food':'🥫','salt':'🧂','nuke_power':'🏭','ct_radiation':'🏥'};
+const RUMOR_NAMES={'irradiated_food':'辐照食品','salt':'核废水囤盐','nuke_power':'核电站碘片','ct_radiation':'CT辐射'};
+
+function showAchievement(){
+    const overlay=document.createElement('div');
+    overlay.id='achievementOverlay';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:700;animation:fadeIn 0.3s ease';
+
+    const allDone=completedRumorIds.size>=RUMORS.length;
+    const totalBadgesShown=completedRumorIds.size;
+    const today=new Date();
+    const dateStr=today.getFullYear()+'年'+(today.getMonth()+1)+'月'+today.getDate()+'日';
+
+    // 里程碑HTML
+    let milestonesHtml='';
+    RUMORS.forEach(r=>{
+        const done=completedRumorIds.has(r.id);
+        milestonesHtml+='<div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;margin:4px;background:'+(done?'linear-gradient(135deg,#f093fb,#f5576c)':'#e8e8e8')+';font-size:20px;box-shadow:'+(done?'0 4px 12px rgba(245,87,108,0.4)':'none')+';transition:all 0.3s">'+RUMOR_ICONS[r.id]+'</div>';
+    });
+
+    // 动态生成证书Canvas
+    const certCanvas=document.createElement('canvas');
+    certCanvas.id='certCanvas';
+    certCanvas.width=800;certCanvas.height=560;
+    drawCertCanvas(certCanvas,allDone,totalBadgesShown,dateStr);
+
+    const card=document.createElement('div');
+    card.style.cssText='background:linear-gradient(145deg,#fff,#edf3f8);border-radius:32px;padding:28px 24px;max-width:360px;width:92%;text-align:center;animation:achievementPop 0.45s cubic-bezier(0.34,1.2,0.64,1)';
+
+    card.innerHTML=
+        '<div style="font-size:72px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.15));animation:trophyShake 0.5s ease 0.2s">🏆⚛️</div>'+
+        '<div style="font-size:22px;font-weight:bold;color:#333;margin:10px 0 4px">'+(allDone?'核+X 科普先锋':'理性辨谣达人')+'</div>'+
+        '<div style="font-size:12px;color:#888;margin-bottom:14px">用科学击破谣言 · 用理性守护日常</div>'+
+        '<div style="margin-bottom:14px">'+milestonesHtml+'</div>'+
+        '<div style="display:flex;justify-content:center;gap:24px;margin-bottom:16px">'+
+        '<div style="text-align:center"><div style="font-size:22px;font-weight:bold;color:#f5576c">'+totalBadgesShown+'</div><div style="font-size:10px;color:#888">辟谣完成</div></div>'+
+        '<div style="width:1px;background:#ddd"></div>'+
+        '<div style="text-align:center"><div style="font-size:22px;font-weight:bold;color:#667eea">'+RUMORS.length+'</div><div style="font-size:10px;color:#888">谣言类型</div></div>'+
+        '<div style="width:1px;background:#ddd"></div>'+
+        '<div style="text-align:center"><div style="font-size:22px;font-weight:bold;color:#1a936f">4</div><div style="font-size:10px;color:#888">辟谣步骤</div></div>'+
+        '</div>'+
+        '<div style="background:linear-gradient(135deg,#f8f0ff,#fff);border-radius:12px;padding:10px 14px;margin-bottom:18px;font-size:12px;color:#555;line-height:1.5">'+(allDone?'🎉 全部谣言辟谣完毕！成为邻里科普达人':'继续加油，完成全部谣言辟谣挑战！')+'</div>'+
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'+
+        '<button id="genCertBtn" style="flex:1;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:11px 0;border-radius:30px;font-weight:bold;font-size:14px;cursor:pointer;min-width:130px;box-shadow:0 4px 14px rgba(102,126,234,0.35);transition:all 0.15s">🏅 生成证书</button>'+
+        '<button id="resetAllBtn2" style="flex:1;background:linear-gradient(135deg,#f093fb,#f5576c);border:none;color:white;padding:11px 0;border-radius:30px;font-weight:bold;font-size:14px;cursor:pointer;min-width:130px;box-shadow:0 4px 14px rgba(245,87,108,0.35);transition:all 0.15s">🔄 重新挑战</button>'+
+        '</div>';
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    if(allDone){
+        setTimeout(()=>createConfetti(),400);
+        playCelebrate();
+    }
+
+    document.getElementById('genCertBtn').addEventListener('click',()=>{
+        overlay.remove();
+        showCertOverlay(certCanvas,allDone);
+    });
+
+    document.getElementById('resetAllBtn2').onclick=()=>{
+        overlay.remove();
+        resetAllProgress();
+    };
+}
+
+function drawCertCanvas(canvas,allDone,totalBadgesShown,dateStr){
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    // 背景
+    const grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,'#f5f7ff');
+    grad.addColorStop(0.5,'#fff8f0');
+    grad.addColorStop(1,'#f0f5ff');
+    ctx.fillStyle=grad;
+    roundRect(ctx,0,0,W,H,20);
+    ctx.fill();
+
+    // 边框
+    ctx.strokeStyle='#c4b5fd';
+    ctx.lineWidth=3;
+    roundRect(ctx,20,20,W-40,H-40,16);
+    ctx.stroke();
+    ctx.strokeStyle='#ddd6fe';
+    ctx.lineWidth=1.5;
+    roundRect(ctx,28,28,W-56,H-56,12);
+    ctx.stroke();
+
+    // 顶部装饰线
+    ctx.strokeStyle='#818cf8';
+    ctx.lineWidth=1;
+    ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    ctx.moveTo(100,80);ctx.lineTo(W-100,80);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 标题
+    ctx.fillStyle='#4338ca';
+    ctx.font='bold 14px "Microsoft YaHei",sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('核规联盟 · 科普成就证书',W/2,72);
+
+    // 主标题
+    ctx.fillStyle='#1e1b4b';
+    ctx.font='bold 42px "Microsoft YaHei",sans-serif';
+    ctx.fillText(allDone?'核+X 科普先锋':'理性辨谣达人',W/2,148);
+
+    // 副标题
+    ctx.fillStyle='#6b7280';
+    ctx.font='16px "Microsoft YaHei",sans-serif';
+    ctx.fillText('用科学击破谣言 · 用理性守护日常',W/2,178);
+
+    // 分隔线
+    ctx.strokeStyle='#e0e7ff';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(160,198);ctx.lineTo(W-160,198);
+    ctx.stroke();
+
+    // 里程碑图标
+    const icons=['🌾','🧂','⚛️','🏥'];
+    const iconsDone=[totalBadgesShown>=1,totalBadgesShown>=2,totalBadgesShown>=3,totalBadgesShown>=4];
+    const spacing=80;
+    const startX=W/2-spacing*1.5;
+    icons.forEach((ic,i)=>{
+        const x=startX+i*spacing;
+        const done=iconsDone[i];
+        ctx.beginPath();
+        ctx.arc(x,250,done?22:20,0,Math.PI*2);
+        ctx.fillStyle=done?'linear-gradient(#f093fb,#f5576c)':(i%2===0?'#f3f4f6':'#f9fafb');
+        if(done){
+            const g=ctx.createRadialGradient(x,250,0,x,250,22);
+            g.addColorStop(0,'#fda4af');g.addColorStop(1,'#f43f5e');
+            ctx.fillStyle=g;
+        } else {
+            ctx.fillStyle='#e5e7eb';
+        }
+        ctx.fill();
+        if(done){
+            ctx.shadowColor='rgba(244,63,94,0.4)';
+            ctx.shadowBlur=8;
+            ctx.fill();
+            ctx.shadowBlur=0;
+        }
+        ctx.strokeStyle=done?'#fda4af':'#d1d5db';
+        ctx.lineWidth=2;
+        ctx.stroke();
+        ctx.fillStyle=done?'#fff':'#9ca3af';
+        ctx.font=done?'22px Arial':'20px Arial';
+        ctx.textAlign='center';
+        ctx.fillText(ic,x,257);
+    });
+
+    // 统计
+    ctx.fillStyle='#374151';
+    ctx.font='bold 14px "Microsoft YaHei",sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('辟谣完成 '+totalBadgesShown+' / '+RUMORS.length+' 个谣言类型',W/2,305);
+
+    ctx.fillStyle='#6b7280';
+    ctx.font='13px "Microsoft YaHei",sans-serif';
+    ctx.fillText('完成 4 个辟谣步骤（查官方通报→讲科学原理→亮法规支撑→我们该怎么做）',W/2,330);
+
+    // 底部日期
+    ctx.fillStyle='#9ca3af';
+    ctx.font='12px "Microsoft YaHei",sans-serif';
+    ctx.fillText(dateStr,W/2,H-60);
+    ctx.fillText('核规联盟 科普平台',W/2,H-42);
+
+    // 装饰角
+    ctx.fillStyle='#818cf8';
+    ctx.font='28px Arial';
+    ctx.textAlign='left';
+    ctx.fillText('✦',36,H-30);
+    ctx.textAlign='right';
+    ctx.fillText('✦',W-36,H-30);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+}
+
+function showCertOverlay(canvas,allDone){
+    const overlay=document.createElement('div');
+    overlay.id='certOverlay';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:800;padding:20px';
+
+    const title=document.createElement('div');
+    title.style.cssText='color:white;font-size:18px;font-weight:bold;margin-bottom:16px;text-align:center';
+    title.textContent='🏅 成就证书已生成';
+    overlay.appendChild(title);
+
+    const preview=document.createElement('canvas');
+    preview.id='certPreview';
+    preview.style.cssText='max-width:100%;max-height:55vh;border-radius:12px;box-shadow:0 16px 48px rgba(0,0,0,0.5);animation:scaleUp 0.3s ease';
+    const scale=Math.min(1,(window.innerHeight*0.6)/canvas.height,(window.innerWidth*0.9)/canvas.width);
+    preview.width=Math.round(canvas.width*scale);
+    preview.height=Math.round(canvas.height*scale);
+    preview.getContext('2d').drawImage(canvas,0,0,preview.width,preview.height);
+    overlay.appendChild(preview);
+
+    const btnRow=document.createElement('div');
+    btnRow.style.cssText='display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;justify-content:center';
+
+    const dlBtn=document.createElement('button');
+    dlBtn.style.cssText='background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:12px 28px;border-radius:30px;font-weight:bold;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(102,126,234,0.4)';
+    dlBtn.textContent='📥 下载证书图片';
+    dlBtn.onclick=()=>{
+        const link=document.createElement('a');
+        link.download='核+X科普证书.png';
+        link.href=canvas.toDataURL('image/png');
+        link.click();
+    };
+    btnRow.appendChild(dlBtn);
+
+    const closeBtn=document.createElement('button');
+    closeBtn.style.cssText='background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:12px 24px;border-radius:30px;font-weight:bold;font-size:14px;cursor:pointer';
+    closeBtn.textContent='关闭';
+    closeBtn.onclick=()=>overlay.remove();
+    btnRow.appendChild(closeBtn);
+
+    overlay.appendChild(btnRow);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click',(e)=>{if(e.target===overlay)overlay.remove();});
+}
+
+// ============================================================
+// 重置全部进度
+// ============================================================
+function resetAllProgress(){
+    clearAllPending();
+    completedRumorIds.clear();
+    totalBadges=0;
+    gameActive=false;
+    gameFinished=false;
+    currentStage=0;
+    shownLaws=[];
+    clearSidePanel();
+    const items=chatArea.querySelectorAll('.message,.law-hint-card,.system-tip,.new-challenge-btn,.src-card,.fact-summary');
+    items.forEach(m=>m.remove());
+    welcomeTip.style.display='none';
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>等待谣言出现...</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— 等待中</span></div>';
+    rumorHint.style.borderLeftColor='#f4a261';
+    rumorHint.style.background='#fff3e0';
+    memberCount.textContent='群成员 8人 · 核规联盟 在线';
+    selectNewRumor();
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>'+currentRumor.title+'</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— '+currentRumor.sender+'</span></div>';
+    memberCount.textContent=currentRumor.groupName||'群成员 8人 · 核规联盟 在线';
+    gameActive=true;
+    updatePips();
+    updateMainBtn();
+    triggerRumor();
+}
+
+// ============================================================
+// 完成辟谣
+// ============================================================
+function completeDebunk(){
+    gameActive=false;
+    gameFinished=true;
+    totalBadges++;
+    completedRumorIds.add(currentRumor.id);
+    const escapedTitle=currentRumor.title.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    rumorHint.innerHTML='✅ <strong>辟谣完成！</strong><br>'+escapedTitle+' 已被科学澄清！<br>🏅 累计获得理性辨谣徽章 ×'+totalBadges;
+    rumorHint.style.borderLeftColor='#1a936f';
+    rumorHint.style.background='#dff0ea';
+    updateMainBtn();
+    showToast('🏅 获得徽章！总计 '+totalBadges+' 个');
+    playBadge();
+    const fb=currentRumor.feedback[Math.floor(Math.random()*currentRumor.feedback.length)];
+    const delays=[800,1600,2400];
+    fb.chars.forEach((ch,i)=>{
+        if(i<delays.length){
+            schedule(()=>{
+                addMsg('other',ch.n,ch.msgs[Math.floor(Math.random()*ch.msgs.length)],ch.a,'positive');
+            },delays[i]);
+        }
+    });
+    const lastDelay=delays[Math.min(fb.chars.length-1,2)];
+
+    const allDone=completedRumorIds.size>=RUMORS.length;
+
+    if(allDone){
+        schedule(()=>addTip('🎉 全部谣言辟谣完毕！成就解锁中...','#1a936f'),lastDelay+500);
+        schedule(()=>showAchievement(),lastDelay+2200);
+    } else {
+        schedule(()=>addTip('🎉 科普成功！累计获得 🏅×'+totalBadges,'#1a936f'),lastDelay+500);
+        schedule(()=>{
+            const btn=document.createElement('button');
+            btn.className='new-challenge-btn';btn.style.cssText='display:block;margin:8px auto;';
+            btn.textContent='🎯 新挑战：下一个谣言';
+            btn.onclick=()=>{playClick();startNewChallenge();};
+            chatArea.appendChild(btn);chatArea.scrollTop=chatArea.scrollHeight;
+        },lastDelay+1500);
+    }
+}
+
+// ============================================================
+// Game Over
+// ============================================================
+function showGameOver(){
+    gameActive=false;
+    gameFinished=true;
+    rumorHint.innerHTML='❌ <strong>科普失败！</strong><br>大爷大妈不信科普，退群了……<br>🏅 累计获得理性辨谣徽章 ×'+totalBadges;
+    rumorHint.style.borderLeftColor='#c0392b';
+    rumorHint.style.background='#ffe0e0';
+    updateMainBtn();
+    if(followUpTimeout)clearTimeout(followUpTimeout);
+    gameoverPopup.innerHTML=
+        '<div class="gameover-mask">'+
+        '<div class="gameover-card">'+
+        '<span class="gameover-emoji">😢</span>'+
+        '<div class="gameover-title">科普方式不当</div>'+
+        '<div class="gameover-sub">大爷大妈不信科普内容，觉得敷衍/不专业，<br>一气之下退出群聊了……<br><br>💡 提示：选择最专业、最硬核的回答方式，<br>才能让大爷大妈真正信服！</div>'+
+        '<button class="retry-btn" onclick="retryChallenge()">🔄 重新挑战</button>'+
+        '</div></div>';
+    gameoverPopup.style.display='block';
+}
+
+function retryChallenge(){
+    playClick();
+    gameoverPopup.style.display='none';
+    gameoverPopup.innerHTML='';
+    resetAndRestart();
+}
+
+// ============================================================
+// 重置并重启（同一谣言）
+// ============================================================
+function resetAndRestart(){
+    gameActive=false;
+    gameFinished=false;
+    if(followUpTimeout)clearTimeout(followUpTimeout);followUpTimeout=null;
+    currentStage=0;
+    shownLaws=[];
+    clearSidePanel();
+    const msgs=chatArea.querySelectorAll('.message,.law-hint-card,.new-challenge-btn,.src-card,.fact-summary');
+    msgs.forEach(m=>m.remove());
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>'+currentRumor.title+'</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— '+currentRumor.sender+'</span></div>';
+    rumorHint.style.borderLeftColor='#f4a261';
+    rumorHint.style.background='#fff3e0';
+    memberCount.textContent=currentRumor.groupName||'群成员 8人 · 核规联盟 在线';
+    gameActive=true;
+    updatePips();
+    updateMainBtn();
+    triggerRumor();
+}
+
+// ============================================================
+// 开始新挑战
+// ============================================================
+function startNewChallenge(){
+    gameActive=false; // 先禁掉，防止旧谣言pending回调在新谣言里乱跑
+    gameFinished=false; // 重置完成标记
+    clearAllPending();
+    currentStage=0;
+    shownLaws=[];
+    clearSidePanel();
+    const items=chatArea.querySelectorAll('.message,.law-hint-card,.system-tip,.new-challenge-btn,.src-card,.fact-summary');
+    items.forEach(m=>m.remove());
+    optionPopup.style.display='none';
+    optionPopup.innerHTML='';
+    welcomeTip.style.display='none';
+    selectNewRumor();
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>'+currentRumor.title+'</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— '+currentRumor.sender+'</span></div>';
+    rumorHint.style.borderLeftColor='#f4a261';
+    rumorHint.style.background='#fff3e0';
+    memberCount.textContent=currentRumor.groupName||'群成员 8人 · 核规联盟 在线';
+    gameActive=true;
+    updatePips();
+    updateMainBtn();
+    schedule(()=>triggerRumor(),300);
+}
+
+// ============================================================
+// 一键辟谣（跳过答题）
+// ============================================================
+function skipToFinish(){
+    playClick();
+    if(!gameActive){addTip('✅ 当前无活跃谣言','#888');return;}
+    // 清空所有stages的答题进度
+    currentStage=4;
+    updatePips();
+    updateMainBtn();
+    if(followUpTimeout)clearTimeout(followUpTimeout);
+    // 依次快速发送所有回复
+    let delay=300;
+    currentRumor.stages.forEach((stage,i)=>{
+        schedule(()=>{
+            addMsg('me','核规志愿者·小原',stage.brief,'👨‍🔬');
+            if(stage.detail){
+                schedule(()=>{
+                    addMsg('me','核规志愿者·小原',stage.detail,'👨‍🔬');
+                },400);
+            }
+            if(stage.law){schedule(()=>{addToSidePanel(stage.law);},200);}
+            if(stage.src){schedule(()=>{addToSidePanel(stage.src);},250);}
+        },delay);
+        delay+=1800;
+    });
+    // 完成
+    schedule(()=>completeDebunk(),delay+500);
+}
+
+// ============================================================
+// 触发谣言（仅一次）
+// ============================================================
+function triggerRumor(){
+    // 先清掉旧tips，避免切换谣言时残留
+    chatArea.querySelectorAll('.system-tip').forEach(t=>t.remove());
+
+    currentRumor.intro.forEach((msg,i)=>{
+        schedule(()=>{
+            if(!gameActive)return;
+            addMsg('other',msg.s,msg.t,AVATAR_MAP[msg.s]||'👤','negative');
+        },i*900);
+    });
+    schedule(()=>{
+        if(!gameActive)return;
+        addTip('⚠️ 群里出现新谣言了！"'+currentRumor.title+'"','#bc3900');
+        showQuestion();
+    },currentRumor.intro.length*900);
+}
+
+function initializeRumorDisplay(){
+    rumorHint.innerHTML=
+        '⚠️ <span class="rumor-warning">当前谣言</span>：<br>'+
+        '<div style="margin-top:6px;padding:8px;background:#fff;border-radius:8px;">'+
+        '📢 <strong>'+currentRumor.title+'</strong><br>'+
+        '<span style="color:#888;font-size:11px;">— '+currentRumor.sender+'</span></div>';
+    rumorHint.style.borderLeftColor='#f4a261';
+    rumorHint.style.background='#fff3e0';
+    memberCount.textContent=currentRumor.groupName||'群成员 8人 · 核规联盟 在线';
+    gameActive=true;
+    updatePips();
+    updateMainBtn();
+    schedule(()=>triggerRumor(),300);
+}
+
+function initializeMainChatFlow() {
+    if (selectedRumorIdFromSplash !== 'random') {
+        const found = RUMORS.find(r => r.id === selectedRumorIdFromSplash);
+        if (found) {
+            currentRumor = found;
+            let findIdx = RUMORS.findIndex(r => r.id === selectedRumorIdFromSplash);
+            if (findIdx !== -1) usedRumorIndices.add(findIdx);
+        } else {
+            selectNewRumor();
+        }
+    } else {
+        selectNewRumor();
+    }
+    initializeRumorDisplay();
+}
+
+// ============================================================
+// 选择新谣言
+// ============================================================
+function selectNewRumor(){
+    if(usedRumorIndices.size>=RUMORS.length)usedRumorIndices.clear();
+    const available=[];
+    for(let i=0;i<RUMORS.length;i++)if(!usedRumorIndices.has(i))available.push(i);
+    const idx=available[Math.floor(Math.random()*available.length)];
+    usedRumorIndices.add(idx);
+    currentRumor=RUMORS[idx];
+}
+
+// ============================================================
+// 发送消息
+// ============================================================
+function sendMsg(){
+    const input=document.getElementById('messageInput');
+    const text=input.value.trim();
+    if(!text)return;
+    playSend();
+    addMsg('me','核规志愿者·小原',text,'👨‍🔬');
+    input.value='';
+}
+
+// ============================================================
+// 事件绑定
+// ============================================================
+document.getElementById('sendBtn').addEventListener('click',sendMsg);
+document.getElementById('messageInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendMsg();});
+document.addEventListener('click',()=>initAudio(),{once:true});
+
+// ============================================================
+// 启动
+// ============================================================
+showNuclearSplash();
+</script>
+</body>
+</html>
