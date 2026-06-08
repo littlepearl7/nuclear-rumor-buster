@@ -63,6 +63,3 @@ he+X/
 
 支持所有现代浏览器（Chrome、Edge、Firefox、Safari），移动端微信内置浏览器可直接打开。
 
-## License
-
-MIT
