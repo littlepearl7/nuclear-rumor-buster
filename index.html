@@ -343,7 +343,7 @@ body {
     <div class="side-content" id="sideContent">
         <div class="side-empty" id="sideEmpty">
             <div class="side-empty-icon">📋</div>
-            <div>点击「亮法规支撑」<br>法律条文将显示在这里</div>
+            <div>辟谣中用到的法律条文<br>将显示在这里</div>
         </div>
     </div>
     <div class="side-clear-btn" id="sideClearBtn" style="display:none;" onclick="clearSidePanel()">🗑️ 清空面板</div>
@@ -418,14 +418,14 @@ const AVATAR_MAP = {
 const RUMORS = [
     {
         id:'irradiated_food',
-        title:'辐照食品带辐射，吃了会致癌基因突变！',
+        title:'辐照食品带辐射，吃了会基因突变致癌！',
         sender:'李大妈 等6人',
         groupName:'邻里互助群 24人 在线',
         intro:[
             {s:'李大妈',t:'大伙听说没，超市里不少凤爪、干货都是辐照食品，我刷短视频刚看到！😱'},
             {s:'赵大爷',t:'我早刷到了，说是辐照全靠核辐射照射，这些食品身上全都带着残留辐射！😰'},
             {s:'年轻宝妈小周',t:'那可糟了，我总给孩子买泡椒凤爪，孩子年纪小，长期吃会不会基因突变啊？😨'},
-            {s:'李大妈',t:'不光孩子，中老年长期吃辐照食品肝癌、白血病风险翻倍，辐射还能改变人体基因！🚫'}
+            {s:'李大妈',t:'不光孩子，中老年长期吃辐照食品会改变人体基因，而且肝癌、白血病风险翻倍！🚫'}
         ],
         stages:[
             {
@@ -705,7 +705,7 @@ const RUMORS = [
                 detail:'国际放射防护委员会也有配套标准，只有在检查带来的"诊断收益"远大于"辐射风险"时，开具检查单才是合法的、正当的。',
                 fact:'⚖️ 法规保障：《射线装置安全防护条例》规定医院必须坚守"正当化与最优化"原则，严禁滥用CT！',
                 law:'射线装置条例',
-                followUp:{s:'张大妈',t:'法律条文写得挺好。但实际去看病时，普通老百姓又不懂医，咱们具体能做点啥来防护呢？'}
+                followUp:{s:'张大妈',t:'法律条文写得挺好。但实际去看病时，咱们具体能做点啥来防护呢？'}
             },
             {
                 btnText:'📋 第四步：我们该怎么做',
@@ -763,7 +763,7 @@ const LAWS_DB = {
     'irradiated_food_src':{title:'人民网科普：辐照食品和辐射有关？',desc:'来源：人民网科普文章，2024年12月发布',link:'http://jl.people.com.cn/n2/2024/1206/c349771-41067151.html',articles:{}},
     'salt_src':{title:'新华网：真别囤了！仅茶卡盐湖食用盐储量就够全国吃70年',desc:'来源：新华网新闻报道，2023年8月发布',link:'https://www.news.cn/politics/2023-08/26/c_1129825713.htm',articles:{}},
     'ct_src':{title:'人民网科普：从健康传播角度看"拍CT致癌"',desc:'来源：人民网科普文章，2025年4月发布',link:'http://sc.people.com.cn/n2/2025/0425/c345167-41208390.html',articles:{}},
-    'nuke_power_src':{title:'生态环境部：国家辐射环境监测数据',desc:'来源：生态环境部辐射环境监测技术中心，数据实时公开可查',link:'https://www.mee.gov.cn/hjzl/',articles:{}},
+    'nuke_power_src':{title:'生态环境部：国家辐射环境监测数据',desc:'来源：生态环境部辐射环境监测技术中心，数据实时公开可查',link:'https://data.rmtc.org.cn/gis/PubIndex.html',articles:{}},
     'GB18524':{title:'《食品安全国家标准 食品辐照加工卫生规范》GB18524-2016',desc:'国家强制标准，严格规范食品辐照加工全过程，保障辐照食品安全可控。',link:'https://faolex.fao.org/docs/pdf/chn215939.pdf',articles:{dose:'规定食品辐照累积剂量不超过10kGy，重复辐照食品的累积剂量同样受此限制，远达不到使物品产生辐射的活化条件。'}},
     '食盐专营办法':{title:'《食盐专营办法》',desc:'国家食盐专营管理法规，保障食盐质量安全，规范市场秩序。',link:'https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_6f39f3a49fa548fda23c96d26423a2e5.html',articles:{19:'第19条：禁止销售不符合食品安全标准的食盐。不合格食盐严禁上市！'}},
     '射线装置条例':{title:'《放射性同位素与射线装置安全和防护条例》',desc:'规范医疗放射诊疗行为，保障患者和受检者健康权益。',link:'https://www.caea.gov.cn/n6760401/n6760402/c6827743/content.html',articles:{38:'第38条：使用射线装置进行放射诊疗的医疗卫生机构，应当制定质量保证方案，遵守质量保证监测规范，按照医疗照射正当化和辐射防护最优化的原则，避免一切不必要的照射，并事先告知患者和受检者辐射对健康的潜在影响。'}},
@@ -801,11 +801,7 @@ function addToSidePanel(type){
     let html='<div class="law-title-side">📜 '+law.title+'</div><div class="law-desc-side">'+law.desc+'</div>';
     for(const[n,t]of Object.entries(law.articles))html+='<div class="law-article-side">'+t+'</div>';
     if(law.link){
-        if(type.endsWith('_src')){
-            html+='<a class="law-link-side" href="'+law.link+'" target="_blank">📎 查看科普来源</a>';
-        } else {
-            html+='<a class="law-link-side" href="'+law.link+'" target="_blank">🔗 查看完整法律条文</a>';
-        }
+        html+='<a class="law-link-side" href="'+law.link+'" target="_blank">🔗 查看完整法律条文</a>';
     }
     card.innerHTML=html;sc.appendChild(card);sc.scrollTop=sc.scrollHeight;
     addTip('📜 相关法规已加入','#667eea');
@@ -1419,8 +1415,6 @@ function resetAllProgress(){
     gameActive=false;
     gameFinished=false;
     currentStage=0;
-    shownLaws=[];
-    clearSidePanel();
     const items=chatArea.querySelectorAll('.message,.law-hint-card,.system-tip,.new-challenge-btn,.src-card,.fact-summary');
     items.forEach(m=>m.remove());
     welcomeTip.style.display='none';
@@ -1525,8 +1519,6 @@ function resetAndRestart(){
     gameFinished=false;
     if(followUpTimeout)clearTimeout(followUpTimeout);followUpTimeout=null;
     currentStage=0;
-    shownLaws=[];
-    clearSidePanel();
     const msgs=chatArea.querySelectorAll('.message,.law-hint-card,.new-challenge-btn,.src-card,.fact-summary');
     msgs.forEach(m=>m.remove());
     rumorHint.innerHTML=
@@ -1551,8 +1543,6 @@ function startNewChallenge(){
     gameFinished=false; // 重置完成标记
     clearAllPending();
     currentStage=0;
-    shownLaws=[];
-    clearSidePanel();
     const items=chatArea.querySelectorAll('.message,.law-hint-card,.system-tip,.new-challenge-btn,.src-card,.fact-summary');
     items.forEach(m=>m.remove());
     optionPopup.style.display='none';
@@ -1595,7 +1585,19 @@ function skipToFinish(){
                 },400);
             }
             if(stage.law){schedule(()=>{addToSidePanel(stage.law);},200);}
-            if(stage.src){schedule(()=>{addToSidePanel(stage.src);},250);}
+            if(stage.src){
+                schedule(()=>{
+                    const srcData=LAWS_DB[stage.src];
+                    if(!srcData||!srcData.link)return;
+                    const card=document.createElement('div');card.className='src-card';
+                    card.style.cssText='background:#edf2ff;border-radius:14px;padding:12px 14px;margin:6px 0;border-left:3px solid #667eea;cursor:pointer;font-size:12px;color:#555;display:flex;align-items:center;gap:8px;transition:background 0.15s';
+                    card.innerHTML='<span style="font-size:16px;">📎</span><span style="flex:1"><span style="color:#333;font-weight:bold">科普来源</span><br><span style="font-size:11px;color:#667eea">'+srcData.title+'</span></span><span style="font-size:13px;color:#667eea">→</span>';
+                    card.onclick=()=>window.open(srcData.link,'_blank');
+                    card.onmouseenter=()=>card.style.background='#e0e5ff';
+                    card.onmouseleave=()=>card.style.background='#edf2ff';
+                    chatArea.appendChild(card);chatArea.scrollTop=chatArea.scrollHeight;
+                },250);
+            }
         },delay);
         delay+=1800;
     });
